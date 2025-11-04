@@ -1,0 +1,558 @@
+@use "sass:math";
+.button-component {
+	// TODO: check all colors
+	/*#region Colors*/
+	//colors
+	$color: #1C1C1C;
+	$color-disabled: #818181;
+	$color-green: #000;
+	$color-green-disabled: #376d3b;
+	$color-red: #000;
+	$color-red-disabled: #8c4e4e;
+	//bg colors
+	$bg: #8e8e8e;
+	$bg-hover: #e39827;
+	$bg-active: #f1be64;
+	$bg-disabled: #3d3d3d;
+	$bg-green: #5eb663;
+	$bg-green-hover: #92e897;
+	$bg-green-active: #cfdf93;
+	$bg-green-disabled: #002b02;
+	$bg-red: #fe5a5a;
+	$bg-red-hover: #ff9b9b;
+	$bg-red-active: #fca8a8;
+	$bg-red-disabled: #571f1f;
+	/*#endregion*/
+	/*#region Default Shadows*/
+	//default
+	$shadow: inset 8px 0 4px -8px #000, inset -8px 0 4px -8px #000, inset 0 10px 2px -8px #e3e3e3, inset 0 10px 2px -8px #282828, inset 0 -9px 2px -8px #000;
+	$shadow-left: inset -8px 0 4px -8px #000, inset 0 10px 2px -8px #e3e3e3, inset 0 10px 2px -8px #282828, inset 0 -9px 2px -8px #000;
+	$shadow-before: inset 8px 0 4px -8px #000, inset 0 10px 2px -8px #e3e3e3, inset 0 10px 2px -8px #282828, inset 8px 0 2px -8px #000;
+	$shadow-right: inset 8px 0 4px -8px #000, inset 0 10px 2px -8px #e3e3e3, inset 0 10px 2px -8px #282828, inset 0 -9px 2px -8px #000;
+	$shadow-after: inset -8px 0 4px -8px #000, inset 0 10px 2px -8px #e3e3e3, inset 0 10px 2px -8px #282828, inset -8px 0 2px -8px #000;
+	$shadow-both: inset 0 10px 2px -8px #e3e3e3, inset 0 10px 2px -8px #282828, inset 0 -9px 2px -8px #000;
+	//hover
+	$shadow-hover: inset 8px 0 4px -8px #000, inset -8px 0 4px -8px #000, inset 0 9px 2px -8px #fff, inset 0 8px 4px -8px #000, inset 0 -8px 4px -8px #000, inset 0 -9px 2px -8px #432400, inset 0 0 4px 2px #f9b44b;
+	$shadow-hover-left: inset -8px 0 4px -8px #000, inset 0 9px 2px -8px #fff, inset 0 8px 4px -8px #000, inset 0 -8px 4px -8px #000, inset 0 -9px 2px -8px #432400, inset -2px 0 4px -2px #f9b44b, inset 0 2px 4px -2px #f9b44b, inset 0 -2px 4px -2px #f9b44b;
+	$shadow-hover-before: inset 8px 0 4px -7px #000, inset 0 9px 2px -8px #fff, inset 0 8px 4px -8px #000, inset 1px 0 4px -4px #f9b44b, inset 0 1px 4px -4px #f9b44b;
+	$shadow-hover-right: inset 8px 0 4px -8px #000, inset 0 9px 2px -8px #fff, inset 0 8px 4px -8px #000, inset 0 -8px 4px -8px #000, inset 0 -9px 2px -8px #432400, inset 1px 0 4px 0 #f9b44b, inset 0 1px 4px 0 #f9b44b, inset 0 -1px 4px 0 #f9b44b;
+	$shadow-hover-after: inset -8px 0 3px -7px #000, inset 0 9px 2px -8px #fff, inset 0 8px 4px -9px #000, inset -1px 0 4px -3px #f9b44b, inset 0 1px 4px -3px #f9b44b;
+	$shadow-hover-both: inset 0 9px 2px -8px #fff, inset 0 8px 4px -8px #000, inset 0 -8px 4px -8px #000, inset 0 -9px 2px -8px #432400, inset 0 2px 4px -2px #f9b44b, inset 0 -2px 4px -2px #f9b44b;
+	//active
+	$shadow-active: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset 8px 0 4px -8px #563a10, inset 8px 0 4px -8px #563a10, inset -8px 0 4px -8px #563a10, inset -8px 0 4px -8px #563a10, inset 0 9px 2px -8px #563a10, inset 0 -9px 2px -8px #563a10, inset 0 -8.5px 0 -8px #563a10;
+	$shadow-active-left: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset -8px 0 4px -8px #563a10, inset -8px 0 4px -8px #563a10, inset 0 9px 2px -8px #563a10, inset 0 -9px 2px -8px #563a10, inset 0 -8.5px 0 -8px #563a10;
+	$shadow-active-before: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset 8px 0 4px -8px #563a10, inset 8px 0 4px -8px #563a10, inset 0 9px 2px -8px #563a10, inset 8.5px 0 0 -8px #563a10;
+	$shadow-active-right: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset 8px 0 4px -8px #563a10, inset 8px 0 4px -8px #563a10, inset 0 9px 2px -8px #563a10, inset 0 -9px 2px -8px #563a10, inset 0 -8.5px 0 -8px #563a10;
+	$shadow-active-after: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset -8px 0 4px -8px #563a10, inset -8px 0 4px -8px #563a10, inset 0 9px 2px -8px #563a10, inset -8.5px 0 0 -8px #563a10;
+	$shadow-active-both: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset 0 9px 2px -8px #563a10, inset 0 -9px 2px -8px #563a10, inset 0 -8.5px 0 -8px #563a10;
+	//disabled
+	$shadow-disabled: inset -8px 0 4px -8px #000, inset 0 8px 4px -8px #000, inset 0 -6px 4px -8px #818181, inset 0 -8px 4px -8px #000;
+	$shadow-disabled-left: inset -8px 0 4px -8px #000, inset 0 8px 4px -8px #000, inset 0 -6px 4px -8px #818181, inset 0 -8px 4px -8px #000;
+	$shadow-disabled-before: inset 0 8px 4px -8px #000, inset 6px 0 4px -8px #818181, inset 8px 0 4px -8px #000;
+	$shadow-disabled-right: inset 8px 0 4px -8px #000, inset 0 8px 4px -8px #000, inset 0 -6px 4px -8px #818181, inset 0 -8px 4px -8px #000;
+	$shadow-disabled-after: inset 0 8px 4px -8px #000, inset -6px 0 4px -8px #818181, inset -8px 0 4px -8px #000;
+	$shadow-disabled-both: inset 0 8px 4px -8px #000, inset 0 -6px 4px -8px #818181, inset 0 -8px 4px -8px #000;
+	/*#endregion*/
+	/*#region Green Shadows*/
+	//default
+	$shadow-green: inset 8px 0 4px -8px #000, inset -8px 0 4px -8px #000, inset 0 10px 2px -8px #95df99, inset 0 10px 2px -8px #163218, inset 0 -9px 2px -8px #000;
+	$shadow-green-left: inset -8px 0 4px -8px #000, inset 0 10px 2px -8px #95df99, inset 0 10px 2px -8px #163218, inset 0 -9px 2px -8px #000;
+	$shadow-green-before: inset 8px 0 2px -7px #000, inset 0 10px 2px -8px #95df99, inset 0 10px 2px -8px #163218;
+	$shadow-green-right: inset 8px 0 4px -8px #000, inset 0 10px 2px -8px #95df99, inset 0 10px 2px -8px #163218, inset 0 -9px 2px -8px #000;
+	$shadow-green-after: inset -8px 0 2px -7px #000, inset 0 10px 2px -8px #95df99, inset 0 10px 2px -8px #163218;
+	$shadow-green-both: inset 0 10px 2px -8px #95df99, inset 0 10px 2px -8px #163218, inset 0 -9px 2px -8px #000;
+	//hover
+	$shadow-green-hover: inset 8px 0 4px -8px #000, inset -8px 0 4px -8px #000, inset 0 9px 2px -8px #cdf1cf, inset 0 8px 4px -8px #000, inset 0 -8px 4px -8px #000, inset 0 -9px 2px -8px #432400;
+	$shadow-green-hover-left: inset -8px 0 4px -8px #000, inset 0 9px 2px -8px #cdf1cf, inset 0 8px 4px -8px #000, inset 0 -8px 4px -8px #000, inset 0 -9px 2px -8px #432400;
+	$shadow-green-hover-before: inset 8px 0 4px -8px #000, inset 0 9px 2px -8px #cdf1cf, inset 0 8px 4px -8px #000, inset 9px 0 2px -8px #432400;
+	$shadow-green-hover-right: inset 8px 0 4px -8px #000, inset 0 9px 2px -8px #cdf1cf, inset 0 8px 4px -8px #000, inset 0 -8px 4px -8px #000, inset 0 -9px 2px -8px #432400;
+	$shadow-green-hover-after: inset -8px 0 4px -8px #000, inset 0 9px 2px -8px #cdf1cf, inset 0 8px 4px -8px #000, inset -9px 0 2px -8px #432400;
+	$shadow-green-hover-both: inset 0 9px 2px -8px #cdf1cf, inset 0 8px 4px -8px #000, inset 0 -8px 4px -8px #000, inset 0 -9px 2px -8px #432400;
+	//active
+	$shadow-green-active: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset 8px 0 4px -8px #3f5024, inset 8px 0 4px -8px #3f5024, inset -8px 0 4px -8px #3f5024, inset -8px 0 4px -8px #3f5024, inset 0 9px 2px -8px #3f5024, inset 0 -9px 2px -8px #3f5024, inset 0 -8.5px 0 -8px #3f5024;
+	$shadow-green-active-left: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset 0 9px 2px -8px #3f5024;
+	$shadow-green-active-before: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset 8px 0 4px -8px #3f5024, inset 8px 0 4px -8px #3f5024, inset 0 9px 2px -8px #3f5024, inset 8.5px 0 0 -8px #3f5024;
+	$shadow-green-active-right: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset 8px 0 4px -8px #3f5024, inset 8px 0 4px -8px #3f5024, inset 0 9px 2px -8px #3f5024, inset 0 -9px 2px -8px #3f5024, inset 0 -8.5px 0 -8px #3f5024;
+	$shadow-green-active-after: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset -8px 0 4px -8px #3f5024, inset -8px 0 4px -8px #3f5024, inset 0 9px 2px -8px #3f5024, inset -8.5px 0 0 -8px #3f5024;
+	$shadow-green-active-both: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset 0 9px 2px -8px #3f5024, inset 0 -9px 2px -8px #3f5024, inset 0 -8.5px 0 -8px #3f5024;
+	//disabled
+	$shadow-green-disabled: inset 8px 0 4px -8px #000, inset -8px 0 4px -8px #000, inset 0 8px 4px -8px #000, inset 0 -6px 4px -8px #376d3b, inset 0 -8px 4px -8px #000;
+	$shadow-green-disabled-left: inset -8px 0 4px -8px #000, inset 0 8px 4px -8px #000, inset 0 -6px 4px -8px #376d3b, inset 0 -8px 4px -8px #000;
+	$shadow-green-disabled-before: inset 8px 0 4px -8px #000, inset 0 8px 4px -8px #000, inset 6px 0 4px -8px #376d3b;
+	$shadow-green-disabled-right: inset 8px 0 4px -8px #000, inset 0 8px 4px -8px #000, inset 0 -6px 4px -8px #376d3b, inset 0 -8px 4px -8px #000;
+	$shadow-green-disabled-after: inset -8px 0 4px -8px #000, inset 0 8px 4px -8px #000, inset -6px 0 4px -8px #376d3b;
+	$shadow-green-disabled-both: inset 0 8px 4px -8px #000, inset 0 -6px 4px -8px #376d3b, inset 0 -8px 4px -8px #000;
+	/*#endregion*/
+	/*#region Red Shadows*/
+	//default
+	$shadow-red: inset 8px 0 4px -8px #000, inset -8px 0 4px -8px #000, inset 0 10px 2px -8px #fda1a1, inset 0 10px 2px -8px #8b0101, inset 0 -9px 2px -8px #000;
+	$shadow-red-left: inset -8px 0 4px -8px #000, inset 0 10px 2px -8px #fda1a1, inset 0 10px 2px -8px #8b0101, inset 0 -9px 2px -8px #000;
+	$shadow-red-before: inset 8px 0 4px -8px #000, inset 0 10px 2px -8px #fda1a1, inset 0 10px 2px -8px #8b0101, inset 9px 0 2px -9px #000;
+	$shadow-red-right: inset 8px 0 4px -8px #000, inset 0 10px 2px -8px #fda1a1, inset 0 10px 2px -8px #8b0101, inset 0 -9px 2px -8px #000;
+	$shadow-red-after: inset -8px 0 4px -8px #000, inset 0 10px 2px -8px #fda1a1, inset 0 10px 2px -8px #8b0101, inset -9px 0 2px -9px #000;
+	$shadow-red-both: inset 0 10px 2px -8px #fda1a1, inset 0 10px 2px -8px #8b0101, inset 0 -9px 2px -8px #000;
+	//hover
+	$shadow-red-hover: inset 8px 0 4px -8px #000, inset -8px 0 4px -8px #000, inset 0 9px 2px -8px #f8eaea, inset 0 8px 4px -8px #000, inset 0 -8px 4px -8px #000, inset 0 -9px 2px -8px #432400;
+	$shadow-red-hover-left: inset -8px 0 4px -8px #000, inset 0 9px 2px -8px #f8eaea, inset 0 8px 4px -8px #000, inset 0 -8px 4px -8px #000, inset 0 -9px 2px -8px #432400;
+	$shadow-red-hover-before: inset 8px 0 4px -8px #000, inset 0 9px 2px -8px #f8eaea, inset 0 8px 4px -8px #000, inset 9px 0 2px -8px #432400;
+	$shadow-red-hover-right: inset 8px 0 4px -8px #000, inset 0 9px 2px -8px #f8eaea, inset 0 8px 4px -8px #000, inset 0 -8px 4px -8px #000, inset 0 -9px 2px -8px #432400;
+	$shadow-red-hover-after: inset -8px 0 4px -8px #000, inset 0 9px 2px -8px #f8eaea, inset 0 8px 4px -8px #000, inset -9px 0 2px -8px #432400;
+	$shadow-red-hover-both: inset 0 9px 2px -8px #f8eaea, inset 0 8px 4px -8px #000, inset 0 -8px 4px -8px #000, inset 0 -9px 2px -8px #432400;
+	//active
+	$shadow-red-active: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset 8px 0 4px -8px #642323, inset 8px 0 4px -8px #642323, inset -8px 0 4px -8px #642323, inset -8px 0 4px -8px #642323, inset 0 9px 2px -8px #642323, inset 0 -9px 2px -8px #642323, inset 0 -8.5px 0 -8px #642323;
+	$shadow-red-active-left: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset -8px 0 4px -8px #642323, inset -8px 0 4px -8px #642323, inset 0 9px 2px -8px #642323, inset 0 -9px 2px -8px #642323, inset 0 -8.5px 0 -8px #642323;
+	$shadow-red-active-before: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset 8px 0 4px -8px #642323, inset 8px 0 4px -8px #642323, inset 0 9px 2px -8px #642323, inset 8.5px 0 0 -8px #642323;
+	$shadow-red-active-right: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset 8px 0 4px -8px #642323, inset 8px 0 4px -8px #642323, inset 0 9px 2px -8px #642323, inset 0 -9px 2px -8px #642323, inset 0 -8.5px 0 -8px #642323;
+	$shadow-red-active-after: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset -8px 0 4px -8px #642323, inset -8px 0 4px -8px #642323, inset 0 9px 2px -8px #642323, inset -8.5px 0 0 -8px #642323;
+	$shadow-red-active-both: inset 0 10px 2px -8px #000, inset 0 9px 2px -8px #000, inset 0 9px 2px -8px #642323, inset 0 -9px 2px -8px #642323, inset 0 -8.5px 0 -8px #642323;
+	//disabled
+	$shadow-red-disabled: inset 8px 0 4px -8px #000, inset -8px 0 4px -8px #000, inset 0 8px 4px -8px #000, inset 0 -6px 4px -8px #8c4e4e, inset 0 -8px 4px -8px #000;
+	$shadow-red-disabled-left: inset -8px 0 4px -8px #000, inset 0 8px 4px -8px #000, inset 0 -6px 4px -8px #8c4e4e, inset 0 -8px 4px -8px #000;
+	$shadow-red-disabled-before: inset 8px 0 4px -8px #000, inset 0 8px 4px -8px #000, inset 6px 0 4px -8px #8c4e4e;
+	$shadow-red-disabled-right: inset 8px 0 4px -8px #000, inset 0 8px 4px -8px #000, inset 0 -6px 4px -8px #8c4e4e, inset 0 -8px 4px -8px #000;
+	$shadow-red-disabled-after: inset -8px 0 4px -8px #000, inset 0 8px 4px -8px #000, inset -6px 0 4px -8px #8c4e4e;
+	$shadow-red-disabled-both: inset 0 8px 4px -8px #000, inset 0 -6px 4px -8px #8c4e4e,
+		inset 0 -8px 4px -8px #000;
+	/*#endregion*/
+	/*#region Sizes*/
+	$angle: 23deg;
+	$angle-small: 19deg;
+	/*#endregion*/
+	//don't touch this props
+	display: inline-block;
+	text-align: center;
+	font-size: 100%;
+	font-weight: 600;
+	vertical-align: baseline;
+	border: none;
+	line-height: inherit;
+	white-space: nowrap;
+	position: relative;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+	.title {
+		display: inline;
+	}
+	//size
+	// TODO: remove magic numbers
+	padding: 10px 12px;
+	height: 36px;
+	min-width: 128px;
+	&.small {
+		height: 24px;
+		padding: 1.999px 8px;
+		&.icon-only {
+			padding: 2px 0;
+			width: 24px;
+			min-width: 24px;
+			&.arrow-left,
+			&.arrow-right {
+				padding: 6.666px 0;
+			}
+			&.arrow-left:before {
+				margin-top: -1.1px;
+			}
+			&.arrow-right:after {
+				margin-top: -11.5px;
+			}
+			&:active,
+			&.active,
+			&:disabled,
+			&.disabled {
+				padding-top: 3px !important;
+				&.arrow-left,
+				&.arrow-right {
+					padding-top: 8.8px !important;
+				}
+				&.arrow-left:before {
+					margin-top: -3.3px;
+				}
+				&.arrow-right:after {
+					margin-top: -13.7px;
+				}
+			}
+		}
+		&:active,
+		&.active,
+		&:disabled,
+		&.disabled {
+			padding-top: 3.999px;
+			&.arrow-left:before {
+				margin-top: 1.5px;
+			}
+			&.arrow-right:after {
+				margin-top: -14.5px;
+			}
+		}
+		&.arrow-left:before {
+			padding: math.div(6px, math.cos($angle-small));
+			transform: rotate(-45deg) skew(-$angle-small, -$angle-small);
+			margin-left: -6.3px;
+			margin-top: 3.5px;
+		}
+		&.arrow-right:after {
+			padding: math.div(6px, math.cos($angle-small));
+			transform: rotate(45deg) skew($angle-small, $angle-small);
+			margin-right: -6.3px;
+			margin-top: -12.5px;
+		}
+	}
+	&.icon-only {
+		padding: 10px 0;
+		width: 36px;
+		min-width: 36px;
+		&:active,
+		&.active,
+		&:disabled,
+		&.disabled {
+			padding-top: 12px !important;
+		}
+	}
+	//colors
+	color: $color;
+	background-color: $bg;
+	box-shadow: $shadow;
+	filter: drop-shadow(0 0 4px #000);
+	&.arrow-left {
+		box-shadow: $shadow-left;
+		margin-left: 8px;
+		&:before {
+			content: "";
+			position: absolute;
+			//size
+			padding: math.div(8.2px, math.cos($angle));
+			transform: rotate(-45deg) skew(-$angle, -$angle);
+			height: 0;
+			width: 0;
+			//position
+			left: 0;
+			margin-left: -9px;
+			margin-top: -1px;
+			//arrow shadow
+			box-shadow: $shadow-before;
+			//arrow color
+			backface-visibility: hidden;
+			background-color: $bg;
+		}
+	}
+	&.arrow-right {
+		box-shadow: $shadow-right;
+		margin-right: 8px;
+		&:after {
+			display: block;
+			content: "";
+			position: absolute;
+			//size
+			padding: math.div(8.2px, math.cos($angle));
+			transform: rotate(45deg) skew($angle, $angle);
+			height: 0;
+			width: 0;
+			//position
+			right: 0;
+			margin-right: -9px;
+			margin-top: -17px;
+			//arrow shadow
+			box-shadow: $shadow-after;
+			//arrow color
+			backface-visibility: hidden;
+			background-color: $bg;
+		}
+	}
+	&.arrow-both {
+		box-shadow: $shadow-both;
+	}
+	&:hover,
+	&.hover,
+	&:focus,
+	&.focus {
+		color: $color;
+		text-decoration: none;
+		outline: 0;
+		background-color: $bg-hover;
+		box-shadow: $shadow-hover;
+		filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 2px #f9b44b);
+		&.arrow-left {
+			box-shadow: $shadow-hover-left;
+			&:before {
+				box-shadow: $shadow-hover-before;
+				background-color: $bg-hover;
+			}
+		}
+		&.arrow-right {
+			box-shadow: $shadow-hover-right;
+			&:after {
+				box-shadow: $shadow-hover-after;
+				background-color: $bg-hover;
+			}
+		}
+		&.arrow-both {
+			box-shadow: $shadow-hover-both;
+		}
+	}
+	&:active,
+	&.active {
+		padding-top: 12px;
+		padding-bottom: 8px;
+		vertical-align: -2px;
+		background-color: $bg-active;
+		box-shadow: $shadow-active;
+		filter: drop-shadow(0 0 2px #000);
+		outline: 0;
+		&.arrow-left {
+			box-shadow: $shadow-active-left;
+			&:before {
+				box-shadow: $shadow-active-before;
+				background-color: $bg-active;
+				margin-top: -3px;
+			}
+		}
+		&.arrow-right {
+			box-shadow: $shadow-active-right;
+			&:after {
+				box-shadow: $shadow-active-after;
+				background-color: $bg-active;
+				margin-top: -19px;
+			}
+		}
+		&.arrow-both {
+			box-shadow: $shadow-active-both;
+		}
+	}
+	&:disabled,
+	&.disabled {
+		cursor: default;
+		padding-top: 12px;
+		padding-bottom: 10px;
+		vertical-align: -2px;
+		background-color: $bg-disabled;
+		color: $color-disabled;
+		box-shadow: $shadow-disabled;
+		filter: drop-shadow(0 0 2px #000);
+		&.arrow-left {
+			box-shadow: $shadow-disabled-left;
+			&:before {
+				box-shadow: $shadow-disabled-before;
+				background-color: $bg-disabled;
+				margin-top: -3px;
+			}
+		}
+		&.arrow-right {
+			box-shadow: $shadow-disabled-right;
+			&:after {
+				box-shadow: $shadow-disabled-after;
+				background-color: $bg-disabled;
+				margin-top: -19px;
+			}
+		}
+		&.arrow-both {
+			box-shadow: $shadow-disabled-both;
+		}
+	}
+	&.color-green {
+		color: $color-green;
+		background-color: $bg-green;
+		box-shadow: $shadow-green;
+		filter: drop-shadow(0 0 4px #000);
+		&.arrow-left {
+			box-shadow: $shadow-green-left;
+			&:before {
+				//arrow shadow
+				box-shadow: $shadow-green-before;
+				//arrow color
+				background-color: $bg-green;
+			}
+		}
+		&.arrow-right {
+			box-shadow: $shadow-green-right;
+			&:after {
+				//arrow shadow
+				box-shadow: $shadow-green-after;
+				//arrow color
+				background-color: $bg-green;
+			}
+		}
+		&.arrow-both {
+			box-shadow: $shadow-green-both;
+		}
+		&:hover,
+		&.hover,
+		&:focus,
+		&.focus {
+			color: $color;
+			background-color: $bg-green-hover;
+			box-shadow: $shadow-green-hover;
+			filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 2px #34be3c);
+			&.arrow-left {
+				box-shadow: $shadow-green-hover-left;
+				&:before {
+					box-shadow: $shadow-green-hover-before;
+					background-color: $bg-green-hover;
+				}
+			}
+			&.arrow-right {
+				box-shadow: $shadow-green-hover-right;
+				&:after {
+					box-shadow: $shadow-green-hover-after;
+					background-color: $bg-green-hover;
+				}
+			}
+			&.arrow-both {
+				box-shadow: $shadow-green-hover-both;
+			}
+		}
+		&:active,
+		&.active {
+			background-color: $bg-green-active;
+			box-shadow: $shadow-green-active;
+			filter: drop-shadow(0 0 2px #000);
+			&.arrow-left {
+				box-shadow: $shadow-green-active-left;
+				&:before {
+					box-shadow: $shadow-green-active-before;
+					background-color: $bg-green-active;
+				}
+			}
+			&.arrow-right {
+				box-shadow: $shadow-green-active-right;
+				&:after {
+					box-shadow: $shadow-green-active-after;
+					background-color: $bg-green-active;
+				}
+			}
+			&.arrow-both {
+				box-shadow: $shadow-green-active-both;
+			}
+		}
+		&:disabled,
+		&.disabled {
+			cursor: default;
+			background-color: $bg-green-disabled;
+			color: $color-disabled;
+			box-shadow: $shadow-green-disabled;
+			filter: drop-shadow(0 0 2px #000);
+			&.arrow-left {
+				box-shadow: $shadow-green-disabled-left;
+				&:before {
+					box-shadow: $shadow-green-disabled-before;
+					background-color: $bg-green-disabled;
+				}
+			}
+			&.arrow-right {
+				box-shadow: $shadow-green-disabled-right;
+				&:after {
+					box-shadow: $shadow-green-disabled-after;
+					background-color: $bg-green-disabled;
+				}
+			}
+			&.arrow-both {
+				box-shadow: $shadow-green-disabled-both;
+			}
+		}
+	}
+	&.color-red {
+		color: $color-red;
+		background-color: $bg-red;
+		box-shadow: $shadow-red;
+		filter: drop-shadow(0 0 4px #000);
+		&.arrow-left {
+			box-shadow: $shadow-red-left;
+			&:before {
+				//arrow shadow
+				box-shadow: $shadow-red-before;
+				//arrow color
+				background-color: $bg-red;
+			}
+		}
+		&.arrow-right {
+			box-shadow: $shadow-red-right;
+			&:after {
+				//arrow shadow
+				box-shadow: $shadow-red-after;
+				//arrow color
+				background-color: $bg-red;
+			}
+		}
+		&.arrow-both {
+			box-shadow: $shadow-red-both;
+		}
+		&:hover,
+		&.hover,
+		&:focus,
+		&.focus {
+			color: $color;
+			background-color: $bg-red-hover;
+			box-shadow: $shadow-red-hover;
+			filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 2px #c35353);
+			&.arrow-left {
+				box-shadow: $shadow-red-hover-left;
+				&:before {
+					box-shadow: $shadow-red-hover-before;
+					background-color: $bg-red-hover;
+				}
+			}
+			&.arrow-right {
+				box-shadow: $shadow-red-hover-right;
+				&:after {
+					box-shadow: $shadow-red-hover-after;
+					background-color: $bg-red-hover;
+				}
+			}
+			&.arrow-both {
+				box-shadow: $shadow-red-hover-both;
+			}
+		}
+		&:active,
+		&.active {
+			background-color: $bg-red-active;
+			box-shadow: $shadow-red-active;
+			filter: drop-shadow(0 0 2px #000);
+			&.arrow-left {
+				box-shadow: $shadow-red-active-left;
+				&:before {
+					box-shadow: $shadow-red-active-before;
+					background-color: $bg-red-active;
+				}
+			}
+			&.arrow-right {
+				box-shadow: $shadow-red-active-right;
+				&:after {
+					box-shadow: $shadow-red-active-after;
+					background-color: $bg-red-active;
+				}
+			}
+			&.arrow-both {
+				box-shadow: $shadow-red-active-both;
+			}
+		}
+		&:disabled,
+		&.disabled {
+			background-color: $bg-red-disabled;
+			color: $color-disabled;
+			box-shadow: $shadow-red-disabled;
+			filter: drop-shadow(0 0 2px #000);
+			&.arrow-left {
+				box-shadow: $shadow-red-disabled-left;
+				&:before {
+					box-shadow: $shadow-red-disabled-before;
+					background-color: $bg-red-disabled;
+				}
+			}
+			&.arrow-right {
+				box-shadow: $shadow-red-disabled-right;
+				&:after {
+					box-shadow: $shadow-red-disabled-after;
+					background-color: $bg-red-disabled;
+				}
+			}
+			&.arrow-both {
+				box-shadow: $shadow-red-disabled-both;
+			}
+		}
+	}
+	&.arrow-both {
+		@extend .arrow-left;
+		@extend .arrow-right;
+	}
+}

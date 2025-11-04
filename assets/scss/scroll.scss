@@ -1,0 +1,80 @@
+$img-path: "../img/scroll";
+
+.y-scroll {
+	overflow-y: scroll;
+}
+
+.x-scroll {
+	overflow-x: scroll;
+}
+
+.scroll {
+	overflow-x: scroll;
+	overflow-y: scroll;
+}
+
+.y-scroll-a {
+	overflow-y: auto;
+}
+
+.x-scroll-a {
+	overflow-x: auto;
+}
+
+.scroll-a {
+	overflow-x: auto;
+	overflow-y: auto;
+}
+
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+
+::-webkit-scrollbar-button {
+	display: none;
+}
+
+::-webkit-scrollbar-thumb {
+	&:vertical {
+		box-shadow: inset 8px 0 6px -10px #000, inset -8px 0 4px -8px #000, inset 0 10px 2px -8px #e3e3e3, inset 0 10px 2px -8px #282828, inset 0 -9px 2px -8px #000;
+		background: #8e8e8e url("#{$img-path}/scroll-y.png") repeat-y;
+	}
+	&:horizontal {
+		box-shadow: inset 8px 0 4px -7.5px #000, inset -8px 0 4px -7.5px #000, inset 0 10px 2px -8px #e3e3e3, inset 0 10px 2px -8px #282828, inset 0 -9px 2px -8px #000, inset 8px 0 1px -6px #8e8e8e, inset -8px 0 1px -6px #8e8e8e;
+		background: #8e8e8e url("#{$img-path}/scroll-x.png") repeat-x;
+	}
+	&:hover {
+		text-decoration: none;
+		outline: 0;
+		box-shadow: inset 8px 0 4px -8px #000, inset -8px 0 4px -8px #000, inset 0 8px 4px -8px #000, inset 0 -8px 4px -8px #000, inset 0 -9px 2px -8px #432400, inset 0 0 4px 2px #f9b44b, 0 0 2px #000, 0 0 2px #f9b44b;
+		&:vertical {
+			background: #8e8e8e url("#{$img-path}/scroll-hover-y.png") repeat-y;
+		}
+		&:horizontal {
+			background: #8e8e8e url("#{$img-path}/scroll-hover-x.png") repeat-x;
+		}
+	}
+	&:active {
+		padding-top: 10px;
+		padding-bottom: 8px;
+		vertical-align: -2px;
+		box-shadow: inset -8.5px 0 2px -8px #563a10, inset 8.5px 0 2px -8px #563a10, inset 0 8.5px 2px -8px #000, inset 0 -9px 2px -8px #563a10, inset 0 -8.5px 0 -8px #563a10;
+		outline: 0;
+		&:vertical {
+			background: #8e8e8e url("#{$img-path}/scroll-active-y.png") repeat-y;
+		}
+		&:horizontal {
+			background: #8e8e8e url("#{$img-path}/scroll-active-x.png") repeat-x;
+		}
+	}
+}
+
+::-webkit-scrollbar-track-piece {
+	background: #333030;
+	box-shadow: inset 8px 0 4px -8px #000, inset -8px 0 4px -8px #000, inset 0 10px 2px -8px #282828, inset 0 -9px 2px -8px #000;
+}
+
+::-webkit-scrollbar-corner {
+	background: #333030;
+}

@@ -1,0 +1,64 @@
+@use "sass:math";
+.table-component {
+	.header {
+		display: grid;
+		grid-template-columns: fit-content(100%) auto fit-content(100%);
+		.select-component {
+			grid-column-start: 1;
+		}
+		.search-field {
+			grid-column-start: 3;
+		}
+	}
+	.table {
+		// TODO: add name for sticky table header?
+		&.scroll,
+		&.y-scroll,
+		&.y-scroll-a {
+			table thead {
+				position: sticky;
+				top: 0;
+			}
+		}
+		table {
+			$bg-color: #242324;
+			$cell-shadow: inset 8px 0 4px -8px #000, inset -8px 0 4px -8px #000, inset 0 8px 2px -8px #e3e3e3, inset 0 10px 2px -8px #282828, inset 0 -9px 2px -8px #000;
+			width: 100%;
+			thead {
+				th {
+					background: $bg-color;
+					font-weight: 600;
+					padding: 10px;
+					box-shadow: $cell-shadow;
+					&.sortable {
+						cursor: pointer;
+						i:before {
+							padding-right: 5px;
+						}
+						&:hover,
+						&:focus,
+						&.hover,
+						&.focus {
+							i:before {
+								color: #ffe6bf;
+							}
+						}
+						&:active,
+						&.active {
+							i:before {
+								color: #f0bd64;
+							}
+						}
+					}
+				}
+			}
+			tbody {
+				td {
+					background: $bg-color;
+					padding: 8px;
+					box-shadow: $cell-shadow;
+				}
+			}
+		}
+	}
+}
