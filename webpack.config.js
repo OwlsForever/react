@@ -47,20 +47,21 @@ module.exports = {
 			{
 				test: /\.(scss|css)$/,
 				use: [
-					MiniCssExtractPlugin.loader,
+					{
+						loader: MiniCssExtractPlugin.loader,
+						options: {
+							publicPath: "../"
+						}
+					},
 					"css-loader",
 					"sass-loader"
 				],
-				generator: {
-					publicPath: "public/",
-				},
 			},
 			{
 				test: /\.(jpg|jpeg|png|gif)$/,
 				type: "asset/resource",
 				generator: {
-					publicPath: "//img/",
-					outputPath: "img/"
+					filename: production ? "img/[hash][ext]" : "img/[name][ext]",
 				}
 			},
 			{

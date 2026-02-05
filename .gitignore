@@ -16,3 +16,6 @@ logs
 npm-debug.log*
 
 _icon/
+
+# Local data
+/local_*.*
