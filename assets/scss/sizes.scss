@@ -13,11 +13,11 @@
 	.mr#{$size} {
 		margin-right: #{$size}px;
 	}
-	.mh#{$size} {
+	.mtb#{$size} {
 		margin-top: #{$size}px;
 		margin-bottom: #{$size}px;
 	}
-	.mw#{$size} {
+	.mlr#{$size} {
 		margin-left: #{$size}px;
 		margin-right: #{$size}px;
 	}
@@ -37,11 +37,11 @@
 	.pr#{$size} {
 		padding-right: #{$size}px;
 	}
-	.ph#{$size} {
+	.ptb#{$size} {
 		padding-top: #{$size}px;
 		padding-bottom: #{$size}px;
 	}
-	.pw#{$size} {
+	.plr#{$size} {
 		padding-left: #{$size}px;
 		padding-right: #{$size}px;
 	}
