@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BaseProps } from "../../src/types/base";
+import { BasePropsNoChildren } from "../../src/types/base";
 import { IconType } from "../../src/types/icon";
 import Icon from "../icon";
 import { makeClassName } from "../../src/utils/utils";
@@ -13,22 +13,33 @@ interface Props {
 			title: string;
 			icon?: IconType;
 			body: React.ReactNode;
+			visible?: boolean;
 		}
 	}
 	startTab?: string;
+	fillAvailable?: boolean;
+	panelExtraClasses?: string;
+	panelStyle?: React.CSSProperties;
 }
 
-function Tabs(props: BaseProps<Props>) {
-	const { tabs, startTab, extraClasses } = props;
+function Tabs(props: BasePropsNoChildren<Props>) {
+	const {
+		tabs, startTab, fillAvailable,
+		panelExtraClasses, panelStyle,
+		extraClasses, cssStyle
+	} = props;
 	const [currentTab, setCurrentTab] = useState(startTab ?? (Object.keys(tabs)[0] || ""));
-	return <div className={
-		makeClassName([
-			"tabs-component flex-column-fill",
-			extraClasses,
-		])
-	}>
+	return <div
+		className={
+			makeClassName([
+				"tabs-component",
+				extraClasses,
+			])
+		}
+		style={fillAvailable ? { ...cssStyle } : cssStyle}
+	>
 		<ul className="tabs">
-			{Object.entries(tabs).map(([tabName, tab]) =>
+			{Object.entries(tabs).filter(([_, tab]) => tab.visible ?? true).map(([tabName, tab]) =>
 				<li key={tabName}>
 					<a className={`tab ${currentTab == tabName ? "active" : ""}`} onClick={() => { setCurrentTab(tabName) }} >
 						{tab.icon ? <Icon icon={tab.icon} /> : ""}{tab.title}
@@ -36,7 +47,7 @@ function Tabs(props: BaseProps<Props>) {
 				</li>
 			)}
 		</ul>
-		<Panel extraClasses="tab-panel flex-column-fill p8">
+		<Panel fillAvailable extraClasses={panelExtraClasses} cssStyle={panelStyle}>
 			{tabs[currentTab] ? tabs[currentTab].body : ""}
 		</Panel>
 	</div>

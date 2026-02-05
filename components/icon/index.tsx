@@ -24,7 +24,7 @@ const makeIconName = ({ name, type, animation, rotation, flip }: IconType) => {
 }
 
 function Icon(props: BaseProps<Props>) {
-	const { extraClasses, icon, small } = props;
+	const { extraClasses, cssStyle, icon, small } = props;
 
 	return <i
 		className={
@@ -35,6 +35,7 @@ function Icon(props: BaseProps<Props>) {
 				extraClasses,
 			])
 		}
+		style={cssStyle}
 	/>
 }
 
