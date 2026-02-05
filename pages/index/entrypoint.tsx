@@ -1,5 +1,5 @@
 import React from "react";
-import Page from "./page";
+import Page from ".";
 import { createRoot } from "react-dom/client";
 import "../../assets/scss/index.scss";
 

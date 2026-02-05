@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import Button from "../../components/button";
-import Table from "../../components/table";
 import Tabs from "../../components/tabs";
 import Panel from "../../components/panel";
 import Icon from "../../components/icon";
 import Input from "../../components/input";
+import Table from "../../components/table";
 
 function Page() {
 	const data: { tags?: string[] | undefined; info: { [key: string]: string | number | React.JSX.Element; } }[] = [
@@ -21,7 +21,7 @@ function Page() {
 	return (
 		<>
 			<Tabs
-				startTab="inputs"
+				startTab="multipleTables"
 				tabs={{
 					inputs: {
 						title: "Inputs",
@@ -31,16 +31,19 @@ function Page() {
 					},
 					panels: {
 						title: "Panels",
-						body: <div style={{ overflow: "auto" }}>
+						body: <>
 							<Panel>
-								<Panel extraClasses="m8 p8" color="lighter">1</Panel>
-								<Panel extraClasses="m8 p8" >2</Panel>
-								<Panel extraClasses="m8 p8" color="darker">3</Panel>
-								<Panel extraClasses="m8 p8" shadowType="inset">4</Panel>
-								<Panel extraClasses="m8 p8" shadowType="inset small">5</Panel>
-								<Panel extraClasses="m8 p8" shadowType="combined">6</Panel>
+								<Panel extraClasses="p8" color="lighter">1</Panel>
+								<Panel extraClasses="mt8 p8" >2</Panel>
+								<Panel extraClasses="mt8 p8" color="darker">3</Panel>
+								<Panel extraClasses="mt8 p8" color="lighter" shadowType="inset">4</Panel>
+								<Panel extraClasses="mt8 p8" shadowType="inset">5</Panel>
+								<Panel extraClasses="mt8 p8" color="darker" shadowType="inset">6</Panel>
+								<Panel extraClasses="mt8 p8" color="lighter" shadowType="inset small">7</Panel>
+								<Panel extraClasses="mt8 p8" shadowType="inset small">8</Panel>
+								<Panel extraClasses="mt8 p8" color="darker" shadowType="inset small">9</Panel>
 							</Panel>
-						</div>,
+						</>,
 					},
 					button: {
 						title: "Buttons",
@@ -431,6 +434,120 @@ function Page() {
 							data={data}
 						/>,
 					},
+					multipleTables: {
+						title: "Miltiple Tables",
+						icon: { name: "table", type: "solid" },
+						body: <>
+							<h1>Header</h1>
+							<Table
+								header={{
+									name: { title: "Name", sortable: true },
+									version: { title: "Version", sortable: true },
+									downloads: { title: "Downloads", sortable: true },
+									trending: { title: "Trending", sortable: true },
+									lastUpdate: { title: "Last updated", sortable: true }
+								}}
+								stickyHeader={true}
+								data={data}
+							/>
+							<h1>Header</h1>
+							<Table
+								header={{
+									name: { title: "Name", sortable: true },
+									version: { title: "Version", sortable: true },
+									downloads: { title: "Downloads", sortable: true },
+									trending: { title: "Trending", sortable: true },
+									lastUpdate: { title: "Last updated", sortable: true }
+								}}
+								stickyHeader={true}
+								data={data}
+							/>
+							<h1>Header</h1>
+							<Table
+								header={{
+									name: { title: "Name", sortable: true },
+									version: { title: "Version", sortable: true },
+									downloads: { title: "Downloads", sortable: true },
+									trending: { title: "Trending", sortable: true },
+									lastUpdate: { title: "Last updated", sortable: true }
+								}}
+								stickyHeader={true}
+								data={data}
+							/>
+							<h1>Header</h1>
+							<Table
+								header={{
+									name: { title: "Name", sortable: true },
+									version: { title: "Version", sortable: true },
+									downloads: { title: "Downloads", sortable: true },
+									trending: { title: "Trending", sortable: true },
+									lastUpdate: { title: "Last updated", sortable: true }
+								}}
+								stickyHeader={true}
+								data={data}
+							/>
+							<h1>Header</h1>
+							<Table
+								header={{
+									name: { title: "Name", sortable: true },
+									version: { title: "Version", sortable: true },
+									downloads: { title: "Downloads", sortable: true },
+									trending: { title: "Trending", sortable: true },
+									lastUpdate: { title: "Last updated", sortable: true }
+								}}
+								stickyHeader={true}
+								data={data}
+							/>
+							<h1>Header</h1>
+							<Table
+								header={{
+									name: { title: "Name", sortable: true },
+									version: { title: "Version", sortable: true },
+									downloads: { title: "Downloads", sortable: true },
+									trending: { title: "Trending", sortable: true },
+									lastUpdate: { title: "Last updated", sortable: true }
+								}}
+								stickyHeader={true}
+								data={data}
+							/>
+							<h1>Header</h1>
+							<Table
+								header={{
+									name: { title: "Name", sortable: true },
+									version: { title: "Version", sortable: true },
+									downloads: { title: "Downloads", sortable: true },
+									trending: { title: "Trending", sortable: true },
+									lastUpdate: { title: "Last updated", sortable: true }
+								}}
+								stickyHeader={true}
+								data={data}
+							/>
+							<h1>Header</h1>
+							<Table
+								header={{
+									name: { title: "Name", sortable: true },
+									version: { title: "Version", sortable: true },
+									downloads: { title: "Downloads", sortable: true },
+									trending: { title: "Trending", sortable: true },
+									lastUpdate: { title: "Last updated", sortable: true }
+								}}
+								stickyHeader={true}
+								data={data}
+							/>
+							<h1>Header</h1>
+							<Table
+								header={{
+									name: { title: "Name", sortable: true },
+									version: { title: "Version", sortable: true },
+									downloads: { title: "Downloads", sortable: true },
+									trending: { title: "Trending", sortable: true },
+									lastUpdate: { title: "Last updated", sortable: true }
+								}}
+								stickyHeader={true}
+								data={data}
+							/>
+						</>,
+					},
 					tableLong: {
 						title: "Table long",
 						icon: { name: "dice-d20", type: "solid" },
@@ -446,8 +563,30 @@ function Page() {
 						/>,
 					},
 				}}
+				cssStyle={{
+					display: "flex",
+					flexDirection: "column",
+					flex: 1,
+					overflow: "hidden",
+				}}
+				panelExtraClasses="p8"
+				panelStyle={{
+					flex: 1,
+					overflow: "auto",
+				}}
 			/>
 		</>
+		// <Table
+		// 	header={{
+		// 		name: { title: "Name", sortable: true },
+		// 		version: { title: "Version", sortable: true },
+		// 		downloads: { title: "Downloads", sortable: true },
+		// 		trending: { title: "Trending", sortable: true },
+		// 		lastUpdate: { title: "Last updated", sortable: true }
+		// 	}}
+		// 	data={[data, data, data, data, data, data, data, data, data].flat()}
+		// 	tagFilter={true}
+		// />
 	)
 };
 
