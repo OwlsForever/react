@@ -17,6 +17,8 @@ app.use("/public", express.static(path.join(__dirname, "static", "public")))
 
 //#region Routes
 app.get("/", async (_req, res) => res.sendFile(path.resolve(__dirname, "static", "views", "pages", "index.html")));
+const pages = ["dreamRaiders"];
+pages.forEach(pageName => app.get("/" + pageName, async (_req, res) => res.sendFile(path.resolve(__dirname, "static", "views", "pages", pageName + ".html"))));
 //#endregion
 
 const configs = new Map(fs.readFileSync("server.config", "utf8").split("\n").map(e => e.split("=") as [string, string]));
