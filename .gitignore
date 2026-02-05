@@ -1,0 +1,21 @@
+# Dependency directories
+node_modules/
+
+# Build output
+static/
+
+#vscode
+.vscode/
+
+#backups & copies
+*.bac
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+_icon/
+
+# Local data
+/local_*.*
