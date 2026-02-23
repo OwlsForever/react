@@ -1,17 +1,21 @@
 {
 	"name": "react",
 	"version": "1.0.0",
+	"homepage": "https://OwlsForever.github.io/react",
 	"description": "A project that I'm making for myself",
 	"main": "index.js",
 	"scripts": {
+		"predeploy": "npm run build",
+		"deploy": "gh-pages -d build",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"server": "ts-node server.ts",
 		"dev": "webpack --mode development",
-		"build": "webpack --mode production"
+		"build": "NODE_ENV=production webpack --mode production"
 	},
 	"author": "OwlsForever",
 	"license": "UNLICENSED",
 	"dependencies": {
+		"add-charset-webpack-plugin": "^1.0.9",
 		"express": "^5.1.0",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0"
@@ -23,6 +27,7 @@
 		"@types/react-dom": "^19.2.2",
 		"css-loader": "^7.1.2",
 		"file-loader": "^6.2.0",
+		"gh-pages": "^6.3.0",
 		"html-webpack-plugin": "^5.6.4",
 		"mini-css-extract-plugin": "^2.9.4",
 		"raw-loader": "^4.0.2",

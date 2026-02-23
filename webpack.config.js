@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const fs = require("fs");
 const production = process.env.NODE_ENV === "production";
+const AddCharsetWebpackPlugin = require("add-charset-webpack-plugin");
 
 const pages = fs.readdirSync("./pages", { withFileTypes: true })
 	.filter(dirent => dirent.isDirectory())
@@ -15,12 +16,12 @@ const generateEntryPoints = entry => entry.reduce((res, page) => ({
 
 const generateHtml = entry => entry.map(page => new HtmlWebpackPlugin({
 	chunks: [page],
-	filename: `../views/pages/${page}.html`,
+	filename: production ? `${page}.html` : `../views/pages/${page}.html`,
 	template: path.join("pages", "template.ejs")
 }));
 
 module.exports = {
-	watch: true,
+	watch: !production,
 	watchOptions: {
 		aggregateTimeout: 200,
 		poll: 1000,
@@ -31,9 +32,9 @@ module.exports = {
 		vendor: ["react", "react-dom"]
 	},
 	output: {
-		path: production ? path.resolve(__dirname, "dist", "static", "public") : path.resolve(__dirname, "static", "public"),
+		path: production ? path.resolve(__dirname, "build") : path.resolve(__dirname, "static", "public"),
 		filename: production ? "js/[chunkhash].js" : "js/[name].js",
-		publicPath: "public/",
+		publicPath: production ? "" : "public/",
 		clean: true, // Cleans the output directory before each build.
 	},
 	devtool: "source-map",
@@ -75,9 +76,10 @@ module.exports = {
 		],
 	},
 	plugins: [
+		new AddCharsetWebpackPlugin({ charset: "utf-8" }),
 		new MiniCssExtractPlugin({
-			filename: production ? "css/[contentHash].css" : "css/[id].css",
-			chunkFilename: production ? "css/[contentHash].css" : "css/[id].css"
+			filename: production ? "css/[name].css" : "css/[id].css",
+			chunkFilename: production ? "css/[id].css" : "css/[id].css"
 		}),
 		...generateHtml(pages)
 	]
