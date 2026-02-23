@@ -7,6 +7,7 @@ export enum CellTypes {
 	Wall = "wall",
 	Start = "start",
 	End = "portal",
+	Empty = "empty",
 }
 
 export enum Rarity {
@@ -34,7 +35,7 @@ export type Cell = {
 	name: AttrName,
 	value: number,
 } | {
-	type: CellTypes.Bomb | CellTypes.Wall | CellTypes.Start | CellTypes.End,
+	type: CellTypes.Bomb | CellTypes.Wall | CellTypes.Start | CellTypes.End | CellTypes.Empty,
 }
 
 export type DreamieStats = {

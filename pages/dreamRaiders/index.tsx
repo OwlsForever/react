@@ -19,6 +19,21 @@ const getCoefByStar = (star: string) => {
 	}
 }
 
+const mapShortcuts = [
+	"t -- total",
+	"b -- beauty",
+	"c -- cuteness",
+	"s -- strength",
+	"w -- wisdom",
+	"prev + \"+\" -- stat up",
+	"prev + \"-\" -- stat down",
+	"prev + number -- enemy",
+	"e -- bomb",
+	"0 -- start",
+	"p -- end",
+	". -- wall",
+].join("\n");
+
 type ResultType = DreamieEvent & { bestPoints: number; bestPath: string; bestPointHistory: string; };
 
 const result2s = (res: ResultType) => [
@@ -31,12 +46,60 @@ const result2s = (res: ResultType) => [
 	`Strength: ${res.strength}   Wisdom: ${res.wisdom}`,
 ].join("\n");
 
+const parseMap = (s: string): Cell[][] => s.indexOf(" ") == -1 ?
+	s.split(/\n/)
+		.filter(e => e !== "")
+		.map(e => {
+			const symbols = e.split("");
+			var cells: Cell[] = [];
+			for (let i = 0; i < symbols.length; i++) {
+				const name = symbols[i];
+				switch (name) {
+					case "e": cells.push({ type: CellTypes.Bomb }); break;
+					case "0": cells.push({ type: CellTypes.Start }); break;
+					case "p": cells.push({ type: CellTypes.End }); break;
+					case ".": cells.push({ type: CellTypes.Wall }); break;
+					case "t": case "b": case "c": case "s": case "w": {
+						if (/\d/.test(symbols[i + 1])) {
+							let number = "";
+							do {
+								i++;
+								number += symbols[i];
+							} while (/\d/.test(symbols[i + 1]));
+							cells.push({ type: CellTypes.Enemy, name, value: +number });
+						} else if (/[+-]/.test(symbols[i + 1])) {
+							i++;
+							cells.push({ type: symbols[i] == "+" ? CellTypes.StatUp : CellTypes.StatDown, name });
+						} else cells.push({ type: CellTypes.Regular, name });
+					} break;
+				}
+			}
+			return cells;
+		})
+	: s.split(/\n/)
+		.filter(e => e !== "")
+		.map(e => e.split(/ +/).map(e => {
+			const name = e[0] as AttrNameShort;
+			if (e.length == 1) switch (e) {
+				case "e": return { type: CellTypes.Bomb };
+				case "0": return { type: CellTypes.Start };
+				case "p": return { type: CellTypes.End };
+				case ".": return { type: CellTypes.Wall };
+				default: return { type: CellTypes.Regular, name };
+			}
+			if (e.length == 2) return { type: e[1] == "u" || e[1] == "+" ? CellTypes.StatUp : CellTypes.StatDown, name };
+			return { type: CellTypes.Enemy, name, value: +e.slice(1) };
+		}));
+
 function Page() {
 	const [dreamiesInfo, setDreamiesInfo] = useState(localStorage.getItem("dreamiesInfo") ?? "");
+	const saveDreamiesInfo = () => localStorage.setItem("dreamiesInfo", dreamiesInfo);
 	const [mapInfo, setMapInfo] = useState(localStorage.getItem("dreamieMap") ?? "");
 	useEffect(() => localStorage.setItem("dreamieMap", mapInfo), [mapInfo]);
 	const [pointsLimit, setPointsLimit] = useState(localStorage.getItem("pointsLimit") ?? "0");
 	useEffect(() => localStorage.setItem("pointsLimit", pointsLimit), [pointsLimit]);
+	const [vividCandyLimit, setVividCandyLimit] = useState(localStorage.getItem("vividCandyLimit") ?? "0");
+	useEffect(() => localStorage.setItem("vividCandyLimit", vividCandyLimit), [vividCandyLimit]);
 	const [output, setOutput] = useState("");
 	useEffect(() => localStorage.setItem("pointsLimit", pointsLimit), [pointsLimit]);
 	const [beautyBonus, setBeautyBonus] = useState(localStorage.getItem("beautyBonus") ?? "0");
@@ -64,7 +127,6 @@ function Page() {
 		const processedDreamies: DreamieEvent[] = dreamiesInfo.split(/\n/).filter(e => e != "").map(e => {
 			const [isAvailable, star, ...nameRaw] = e.split(" ");
 			const name = nameRaw.join(" ");
-			// const [isAvailable, beautyRaw, cutenessRaw, strengthRaw, wisdomRaw, ...name] = e.split(" ");
 			const k = getCoefByStar(star);
 			if (dreamieCodex[name] === undefined) return;
 			const beauty = Math.round(dreamieCodex[name].beauty / 60 * k + +beautyBonus);
@@ -72,7 +134,6 @@ function Page() {
 			const strength = Math.round(dreamieCodex[name].strength / 60 * k + +strengthBonus);
 			const wisdom = Math.round(dreamieCodex[name].wisdom / 60 * k + +wisdomBonus);
 			return {
-				// isAvailable: true,
 				isAvailable: +isAvailable,
 				total: beauty + cuteness + strength + wisdom,
 				beauty,
@@ -83,7 +144,6 @@ function Page() {
 			}
 		}).filter(e => e !== undefined && e.total > bonusTotal) as DreamieEvent[];
 		setDreamies(processedDreamies);
-		// console.log(processedDreamies);
 	}, [dreamiesInfo, beautyBonus, cutenessBonus, strengthBonus, wisdomBonus]);
 	const setDefaultDreamies = (rarity: number) => setDreamiesInfo(
 		Object.entries(dreamieCodex)
@@ -92,23 +152,20 @@ function Page() {
 	);
 
 	const processMap = () => {
-		const map: Cell[][] = mapInfo
-			.split(/\n/)
-			.filter(e => e !== "")
-			.map(e => e.split(" ").map(e => {
-				const name = e[0] as AttrNameShort;
-				if (e.length == 1) switch (e) {
-					case "e": return { type: CellTypes.Bomb };
-					case "0": return { type: CellTypes.Start };
-					case "p": return { type: CellTypes.End };
-					default: return { type: CellTypes.Regular, name };
-				}
-				if (e.length == 2) return { type: e[1] == "u" || e[1] == "+" ? CellTypes.StatUp : CellTypes.StatDown, name };
-				return { type: CellTypes.Enemy, name, value: +e.slice(1) };
-			}));
+		var map: Cell[][] = parseMap(mapInfo);
+		const map2 = parseMap(mapInfo.replaceAll(/ /g, ""));
+		var sun: { i: number; j: number; }[] = [];
+		for (let i = 0; i < map.length; i++) {
+			for (let j = map[i].length - 1; j >= 0; j--) {
+				const cell = map[i][j]
+				if (cell.type == CellTypes.Enemy && cell.name !== "t" && cell.name != "total") sun.push({ i, j });
+			}
+		}
+		const emptyCell: Cell = { type: CellTypes.Empty };
 		var bestPoints = 0;
 		var bestPath: string[] = [];
 		var bestPointHistory: number[] = [];
+		var bestEnergySpent: number = Infinity;
 		const recursiveSearch = (
 			dreamie: DreamieEvent,
 			i: number = (map.length - 1),
@@ -116,8 +173,10 @@ function Page() {
 			currentPath: string[] = [],
 			points: number = 0,
 			pointHistory: number[] = [],
+			energySpent: number = 0,
+			vividLeft: number = +vividCandyLimit,
+			vividUsedBefore: boolean = false,
 		) => {
-			const cell = map[i][j];
 			const getName = (name: string) => {
 				var res = "";
 				switch (name) {
@@ -130,50 +189,136 @@ function Page() {
 				}
 				return res as keyof DreamieStats | "total";
 			}
-			const dreamieStart = JSON.parse(JSON.stringify(dreamie));
-			switch (cell.type) {
-				case CellTypes.Regular: points += dreamie[getName(cell.name)]; break;
-				case CellTypes.Enemy: {
-					var name = getName(cell.name);
-					if (dreamie[name] < cell.value) points = -Infinity; else {
-						points += Math.round(dreamie[name] * (name == "total" ? 1.2 : 5));
-					}
-				} break;
-				case CellTypes.StatUp: {
-					var name = getName(cell.name);
-					const increment = Math.round(dreamie[name] * 0.5);
-					dreamie[name] += increment;
-					dreamie.total += increment;
-				} break;
-				case CellTypes.StatDown: {
-					var name = getName(cell.name);
-					const decrement = Math.round(dreamie[name] * 0.3);
-					dreamie[name] -= decrement;
-					dreamie.total -= decrement;
-				}; break;
-				case CellTypes.End: {
-					if (points > bestPoints) {
-						bestPoints = points;
-						bestPath = [...currentPath];
-						bestPointHistory = [...pointHistory];
-					}
-					return;
+			const isOkForVivid = (cell: Cell) => {
+				switch (cell.type) {
+					case CellTypes.Regular: return getName(cell.name) == "total";
+					case CellTypes.Enemy: case CellTypes.Bomb: case CellTypes.StatUp: return true;
+					default: return false;
 				}
 			}
-			pointHistory.push(points);
+			var revertActions: (() => void)[] = [];
+			const clearCell = (i: number, j: number) => {
+				const cell = map[i][j];
+				revertActions.push(() => map[i][j] = cell);
+				map[i][j] = emptyCell;
+			}
+			const getRewardsByCell = (i: number, j: number) => {
+				const cell = map[i]?.[j];
+				if (cell === undefined) return 0;
+				switch (cell.type) {
+					case CellTypes.Regular: {
+						clearCell(i, j);
+						points += dreamie[getName(cell.name)];
+						return true;
+					}
+					case CellTypes.Enemy: {
+						var name = getName(cell.name);
+						if (name == "total") {
+							clearCell(i, j);
+						} else {
+							revertActions.push(() => {
+								sun.forEach(({ i, j }) => map[i][j] = cell);
+							});
+							sun.forEach(({ i, j }) => map[i][j] = emptyCell);
+						}
+						points += dreamie[name] < cell.value ? -Infinity : Math.round(dreamie[name] * (name == "total" ? 1.2 : 5));
+						return true;
+					}
+					case CellTypes.Bomb: {
+						clearCell(i, j);
+						getRewardsByCell(i - 1, j - 1);
+						getRewardsByCell(i - 1, j);
+						getRewardsByCell(i - 1, j + 1);
+						getRewardsByCell(i, j - 1);
+						getRewardsByCell(i, j + 1);
+						getRewardsByCell(i + 1, j - 1);
+						getRewardsByCell(i + 1, j);
+						getRewardsByCell(i + 1, j + 1);
+						return true;
+					}
+					case CellTypes.StatUp: {
+						var name = getName(cell.name);
+						const increment = Math.round(dreamie[name] * 0.5);
+						const oldStat = dreamie[name];
+						const oldTotal = dreamie.total;
+						revertActions.push(() => {
+							map[i][j] = cell;
+							dreamie[name] = oldStat;
+							dreamie.total = oldTotal;
+						});
+						map[i][j] = emptyCell;
+						dreamie[name] += increment;
+						dreamie.total += increment;
+						return true;
+					}
+					case CellTypes.StatDown: {
+						var name = getName(cell.name);
+						const decrement = Math.round(dreamie[name] * 0.3);
+						const oldStat = dreamie[name];
+						const oldTotal = dreamie.total;
+						revertActions.push(() => {
+							map[i][j] = cell;
+							dreamie[name] = oldStat;
+							dreamie.total = oldTotal;
+						});
+						map[i][j] = emptyCell;
+						dreamie[name] -= decrement;
+						dreamie.total -= decrement;
+						return true;
+					}
+				}
+				return false;
+			}
+			const cell = map[i][j];
+			if (cell.type == CellTypes.End) {
+				if ((points > bestPoints && energySpent <= bestEnergySpent) || energySpent < bestEnergySpent) {
+					bestPoints = points;
+					bestPath = [...currentPath];
+					bestPointHistory = [...pointHistory];
+					bestEnergySpent = energySpent;
+				}
+				return;
+			}
+			if (cell.type == CellTypes.Enemy && getName(cell.name) !== "total") {
+				i = sun[0].i;
+				j = sun[0].j;
+			}
+			const rewardRecieved = getRewardsByCell(i, j);
+			if (rewardRecieved) pointHistory.push(points);
+			const revertMoveActions = revertActions;
+			revertActions = [];
+			if ((cell.type == CellTypes.Start || cell.type == CellTypes.StatUp || vividUsedBefore) && vividLeft > 0) {
+				for (let i1 = 0; i1 < map.length; i1++) {
+					for (let j1 = 0; j1 < map[i1].length; j1++) {
+						if (isOkForVivid(map[i1][j1])) {
+							const pointsBefore = points;
+							const rewardRecieved = getRewardsByCell(i1, j1);
+							if (rewardRecieved) pointHistory.push(points);
+							currentPath.push(`vivid(${i1},${j1})`);
+							recursiveSearch(dreamie, i, j, currentPath, points, pointHistory, energySpent, vividLeft - 1, true);
+							revertActions.forEach(e => e());
+							revertActions = [];
+							points = pointsBefore;
+							if (rewardRecieved) pointHistory.pop();
+							currentPath.pop();
+						}
+					}
+				}
+			}
 			const upType = map[i - 1]?.[j]?.type;
 			if (upType !== undefined && upType !== CellTypes.Wall) {
 				currentPath.push("↑");
-				recursiveSearch(dreamie, i - 1, j, currentPath, points, pointHistory);
+				recursiveSearch(dreamie, i - 1, j, currentPath, points, pointHistory, energySpent + 1, vividLeft, false);
 				currentPath.pop();
 			}
 			const rightType = map[i][j + 1]?.type;
 			if (rightType !== undefined && rightType !== CellTypes.Wall) {
 				currentPath.push("→");
-				recursiveSearch(dreamie, i, j + 1, currentPath, points, pointHistory);
+				recursiveSearch(dreamie, i, j + 1, currentPath, points, pointHistory, energySpent + 1, vividLeft, false);
 				currentPath.pop();
 			}
-			pointHistory.pop();
+			revertMoveActions.forEach(e => e());
+			if (rewardRecieved) pointHistory.pop();
 		}
 		const results = dreamies.map(e => {
 			bestPoints = 0;
@@ -182,14 +327,12 @@ function Page() {
 			recursiveSearch(JSON.parse(JSON.stringify(e)));
 			return {
 				...e,
-				name: e.name + (e.isAvailable ? "" : " (used)"),
 				bestPoints,
 				bestPath: bestPath.join(" "),
 				bestPointHistory: bestPointHistory.join(" "),
 			}
 		}).filter(e => e.bestPoints >= +pointsLimit).sort((a, b) => b.bestPoints - a.bestPoints);
-		// console.log(result);
-
+		
 		const best = results[0];
 		const worst = results[results.length - 1];
 		const output = results.length > 0 ? [
@@ -204,7 +347,6 @@ function Page() {
 	return (
 		<>
 			<Tabs
-				// startTab="sweetTreat"
 				tabs={{
 					sweetTreat: {
 						title: "Sweet Treat",
@@ -230,7 +372,7 @@ function Page() {
 									/>
 									<div className="mb8">
 										<Button extraClasses="mr8" text="Load" onClick={() => setDreamiesInfo(localStorage.getItem("dreamiesInfo") ?? "")} color="red" cssStyle={{ width: "calc(50% - 4px)" }} />
-										<Button text="Save" onClick={() => localStorage.setItem("dreamiesInfo", dreamiesInfo)} color="green" cssStyle={{ width: "calc(50% - 4px)" }} />
+										<Button text="Save" onClick={saveDreamiesInfo} color="green" cssStyle={{ width: "calc(50% - 4px)" }} />
 									</div>
 									<Button text="Set all available" onClick={() => setDreamiesInfo(dreamiesInfo.replaceAll(/\d( \d )/g, "1$1"))} cssStyle={{ width: "100%" }} />
 								</Panel>
@@ -271,15 +413,26 @@ function Page() {
 										cssStyle={{ width: "100px" }}
 										otherAttributes={{ type: "number", min: "0" }}
 									/>
+									<div>
+										<h5 className="mr20" style={{ display: "inline" }}>Vivid candy</h5>
+										<Input
+											id="vividCandyLimit"
+											extraClasses="mb8"
+											value={vividCandyLimit}
+											onChange={e => setVividCandyLimit(e.target.value)}
+											cssStyle={{ width: "100px" }}
+											otherAttributes={{ type: "number", min: "0" }}
+										/>
+									</div>
 									<Input
 										id="map"
 										extraClasses="mb8"
 										value={mapInfo}
 										onChange={e => setMapInfo(e.target.value)}
 										inputTag="textarea"
-										cssStyle={{ width: "100%", height: "300px" }}
+										cssStyle={{ width: "100%", height: "200px" }}
 									/>
-									<Button text="Clear" onClick={() => setMapInfo("")} extraClasses="mr8" color="red" cssStyle={{ width: "calc(50% - 4px)" }} />
+									<Button text="Info" onClick={() => setOutput(mapShortcuts)} extraClasses="mr8" cssStyle={{ width: "calc(50% - 4px)" }} />
 									<Button text="Process" onClick={processMap} color="green" cssStyle={{ width: "calc(50% - 4px)" }} />
 								</Panel>
 								<Panel extraClasses="p8" cssStyle={{ width: "300px", height: "100%", display: "flex", flexFlow: "column", }}>
@@ -301,19 +454,22 @@ function Page() {
 								}}>
 								<Table
 									header={{
-										name: { title: "Name", sortable: true, headerStyle: { width: "200px" } },
+										name: { title: "Name", sortable: true, headerStyle: { width: "210px" } },
 										bestPoints: { title: "Result", sortable: true, headerStyle: { width: "80px" } },
 										total: { title: "Total", sortable: true, headerStyle: { width: "70px" } },
 										beauty: { title: "Beauty", sortable: true, headerStyle: { width: "85px" } },
 										cuteness: { title: "Cuteness", sortable: true, headerStyle: { width: "100px" } },
 										strength: { title: "Strength", sortable: true, headerStyle: { width: "100px" } },
 										wisdom: { title: "Wisdom", sortable: true, headerStyle: { width: "95px" } },
-										printInfo: { title: "Show path" },
+										printInfo: { title: "Show path", headerStyle: { width: "144px" } },
+										markAsUsed: { title: "", headerStyle: { width: "144px" } },
 									}}
 									stickyHeader={true}
-									data={result.map(e => ({
+									data={result.map((e, i) => ({
 										info: {
-											...e, printInfo: <Button
+											...e,
+											name: e.name + (e.isAvailable ? "" : " (used)"),
+											printInfo: <Button
 												small={true}
 												color={e.isAvailable ? "green" : "red"}
 												text={"Print info" + (e.isAvailable ? "" : " (used)")}
@@ -323,7 +479,20 @@ function Page() {
 													console.log(val);
 													setOutput(val);
 												}}
-											/>
+											/>,
+											markAsUsed: e.isAvailable ? <Button
+												small={true}
+												text={"Mark as used"}
+												onClick={() => {
+													setResult(result.map((e, j) => i == j ? ({ ...e, isAvailable: 0 }) : e));
+													console.log()
+													setDreamiesInfo(dreamiesInfo.replace(new RegExp(`\\d( \\d ${e.name})`, "g"), "0$1"));
+													const val = result2s(e);
+													console.log("------------");
+													console.log(val);
+													setOutput(val);
+												}}
+											/> : "",
 										}
 									}))}
 								/>
