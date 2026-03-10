@@ -1,5 +1,5 @@
 import React, { CSSProperties, useState } from "react";
-import { makeClassName } from "../../src/utils/utils";
+import { makeClassName } from "../../src/utils/helpers";
 import { BasePropsNoChildren } from "../../src/types/base";
 
 import "./style.scss";

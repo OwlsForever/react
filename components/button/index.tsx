@@ -1,7 +1,7 @@
 import React, { MouseEvent } from "react";
 import { IconType } from "../../src/types/icon";
 import { BasePropsNoChildren } from "../../src/types/base";
-import { makeClassName } from "../../src/utils/utils";
+import { makeClassName } from "../../src/utils/helpers";
 import Icon from "../icon";
 
 import "./style.scss";

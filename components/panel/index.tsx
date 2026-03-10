@@ -1,6 +1,6 @@
 import React from "react";
 import { BaseProps } from "../../src/types/base";
-import { makeClassName } from "../../src/utils/utils";
+import { makeClassName } from "../../src/utils/helpers";
 
 import "./style.scss";
 

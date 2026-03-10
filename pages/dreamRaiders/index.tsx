@@ -332,7 +332,7 @@ function Page() {
 				bestPointHistory: bestPointHistory.join(" "),
 			}
 		}).filter(e => e.bestPoints >= +pointsLimit).sort((a, b) => b.bestPoints - a.bestPoints);
-		
+
 		const best = results[0];
 		const worst = results[results.length - 1];
 		const output = results.length > 0 ? [

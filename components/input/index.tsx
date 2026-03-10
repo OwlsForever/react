@@ -1,6 +1,6 @@
 import React, { ChangeEvent, ComponentProps, DOMAttributes, ElementType } from "react";
 import { BasePropsNoChildren } from "../../src/types/base";
-import { makeClassName } from "../../src/utils/utils";
+import { makeClassName } from "../../src/utils/helpers";
 
 import "./style.scss";
 

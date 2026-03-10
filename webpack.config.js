@@ -28,7 +28,7 @@ module.exports = {
 	},
 	stats: "minimal",
 	entry: {
-		...generateEntryPoints(pages),
+		...generateEntryPoints(production ? ["repo", "dreamRaiders", "simulations"] : pages),
 		vendor: ["react", "react-dom"]
 	},
 	output: {

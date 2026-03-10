@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BasePropsNoChildren } from "../../src/types/base";
 import { IconType } from "../../src/types/icon";
 import Icon from "../icon";
-import { makeClassName } from "../../src/utils/utils";
+import { makeClassName } from "../../src/utils/helpers";
 import Panel from "../panel";
 
 import "./style.scss";

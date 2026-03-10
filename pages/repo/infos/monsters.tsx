@@ -7,7 +7,7 @@ import {
 } from "./images";
 
 import Icon from "../../../components/icon";
-import { stringCompare } from "../../../src/utils/utils";
+import { stringCompare } from "../../../src/utils/helpers";
 
 type BaseValue = {
 	name: string;
