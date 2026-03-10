@@ -5,9 +5,10 @@ const fs = require("fs");
 const production = process.env.NODE_ENV === "production";
 const AddCharsetWebpackPlugin = require("add-charset-webpack-plugin");
 
-const pages = fs.readdirSync("./pages", { withFileTypes: true })
-	.filter(dirent => dirent.isDirectory())
-	.map(e => e.name);
+const pages = production ? ["repo", "dreamRaiders", "simulations"]
+	: fs.readdirSync("./pages", { withFileTypes: true })
+		.filter(dirent => dirent.isDirectory())
+		.map(e => e.name);
 
 const generateEntryPoints = entry => entry.reduce((res, page) => ({
 	...res,
@@ -28,7 +29,7 @@ module.exports = {
 	},
 	stats: "minimal",
 	entry: {
-		...generateEntryPoints(production ? ["repo", "dreamRaiders", "simulations"] : pages),
+		...generateEntryPoints(pages),
 		vendor: ["react", "react-dom"]
 	},
 	output: {
