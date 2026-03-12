@@ -9,10 +9,50 @@ import Button from "../../components/button";
 import Input from "../../components/input";
 import { getMulberry32PRNG, getRandomSeed } from "../../src/utils/random";
 import spreadsheetImage from "./taiji.png";
-import { idfn } from "../../src/utils/helpers";
+import { idfn, stringCompare } from "../../src/utils/helpers";
 import Nonogram from "./nonograms";
 
-const nonograms = [
+const nonogramsInfo = [
+	{
+		title: "Птицы",
+		width: 15,
+		height: 10,
+		url: "https://www.nonograms.org/nonograms/i/43244",
+		cols: [[1, 1], [2, 1], [3, 1], [1, 3], [3, 1, 1], [1, 2, 1], [1, 1, 1], [1, 2], [1, 2], [5], [1, 3], [2, 1, 1], [1, 1, 1], [2], [1]],
+		rows: [[2, 4], [2, 3, 1], [2, 1], [2, 2, 1], [1, 1, 2], [5, 3], [3, 1, 1], [3], [1, 1], [8]]
+	},
+	{
+		title: "A dog climbs on the table",
+		width: 15,
+		height: 10,
+		url: "https://www.nonograms.org/nonograms/i/39127",
+		cols: [[1], [1], [2, 2], [1, 1], [1, 1], [1, 1], [1, 1, 1], [2, 3, 2], [6], [2, 1], [1], [2, 3], [1, 2, 1], [2, 1], [6]],
+		rows: [[1], [2, 1], [4, 2], [4], [2, 2, 1], [10, 1, 1], [1, 1, 1], [4, 4], [1, 1, 1, 1], [1, 1, 1, 1]]
+	},
+	{
+		title: "A jumping cat",
+		width: 15,
+		height: 10,
+		url: "https://www.nonograms.org/nonograms/i/36472",
+		cols: [[2, 1], [2, 3], [1, 1], [6], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [2, 1], [1, 2], [2, 3], [3, 1], [1, 1, 1], [2, 2]],
+		rows: [[1, 1], [2, 3], [3, 2, 1, 1], [7, 3], [1, 2], [1, 6], [3, 4], [3, 1], [1], [2]]
+	},
+	{
+		title: "A parrot",
+		width: 10,
+		height: 10,
+		url: "https://www.nonograms.org/nonograms/i/36478",
+		cols: [[3], [3], [2, 1], [1, 1, 3], [1], [2], [7], [2, 1, 2], [2, 2, 1], [2]],
+		rows: [[1], [2], [3, 1], [5, 2], [2, 3], [2, 1, 1], [3, 1], [1, 1, 1], [1, 2], [1, 2]]
+	},
+	{
+		title: "2:02",
+		width: 15,
+		height: 15,
+		url: "https://www.nonograms.org/nonograms/i/38319",
+		cols: [[1], [5], [1], [1, 3, 5], [1, 1, 1, 5, 2], [3, 1, 2], [2], [1, 1, 2], [1, 5, 2], [1], [2, 1, 3], [2, 1, 1, 1], [2, 3, 1, 1, 1], [4, 1, 1], [6, 3]],
+		rows: [[2, 3, 5], [1, 1, 4], [1, 3, 2, 2], [1, 1, 1, 2], [1, 3, 1, 2], [1, 1], [1, 1, 3, 1], [1, 1, 1], [1, 3, 1], [1, 1], [2, 3], [1, 2], [1, 4, 3], [4, 1], [3, 3]]
+	},
 	{
 		title: "Duckling",
 		width: 15,
@@ -36,14 +76,6 @@ const nonograms = [
 		url: "https://www.nonograms.org/nonograms/i/19918",
 		cols: [[3, 1, 2], [1, 3, 5], [1, 3, 3, 1], [2, 2, 1], [3, 3], [], [3, 2], [5, 2, 3], [7, 5], [1, 1, 5], [3, 3, 1, 2], [1, 3, 3], [1, 4], [2, 2, 1, 2], [3, 2]],
 		rows: [[3], [3, 1], [3, 3, 1], [1, 2, 3, 1], [2, 1, 3, 3], [5, 1, 1, 2], [3, 2, 3, 1], [1, 1, 5], [1, 1, 3], [2, 1, 1, 1], [2, 1, 3, 1], [2, 1, 3, 1, 1], [3, 3, 1, 1], [2, 5, 1], [1, 3, 1]]
-	},
-	{
-		title: "2:02",
-		width: 15,
-		height: 15,
-		url: "https://www.nonograms.org/nonograms/i/38319",
-		cols: [[1], [5], [1], [1, 3, 5], [1, 1, 1, 5, 2], [3, 1, 2], [2], [1, 1, 2], [1, 5, 2], [1], [2, 1, 3], [2, 1, 1, 1], [2, 3, 1, 1, 1], [4, 1, 1], [6, 3]],
-		rows: [[2, 3, 5], [1, 1, 4], [1, 3, 2, 2], [1, 1, 1, 2], [1, 3, 1, 2], [1, 1], [1, 1, 3, 1], [1, 1, 1], [1, 3, 1], [1, 1], [2, 3], [1, 2], [1, 4, 3], [4, 1], [3, 3]]
 	},
 	{
 		title: "Argali",
@@ -750,14 +782,6 @@ const nonograms = [
 		rows: [[2, 2, 1], [1, 2, 2, 1, 1], [1, 4, 1, 1], [1, 2, 2, 1], [1, 1, 1, 2], [1, 2], [3, 1, 2], [1, 4, 2], [2, 2, 3], [2, 2, 3]]
 	},
 	{
-		title: "Птицы",
-		width: 15,
-		height: 10,
-		url: "https://www.nonograms.org/nonograms/i/43244",
-		cols: [[1, 1], [2, 1], [3, 1], [1, 3], [3, 1, 1], [1, 2, 1], [1, 1, 1], [1, 2], [1, 2], [5], [1, 3], [2, 1, 1], [1, 1, 1], [2], [1]],
-		rows: [[2, 4], [2, 3, 1], [2, 1], [2, 2, 1], [1, 1, 2], [5, 3], [3, 1, 1], [3], [1, 1], [8]]
-	},
-	{
 		title: "A child plays with an airplane",
 		width: 15,
 		height: 15,
@@ -772,14 +796,6 @@ const nonograms = [
 		url: "https://www.nonograms.org/nonograms/i/35228",
 		cols: [[2], [3, 2], [3, 1, 1], [1, 2, 1, 2, 1], [1, 3, 1, 4], [1, 3, 1, 2], [10], [4, 2, 1], [2, 1, 2], [2, 1, 3], [3, 3, 2, 1, 1], [1, 2, 4, 3], [2, 1], [2, 2], [4]],
 		rows: [[3, 2], [3, 3, 1], [3, 2, 2], [1, 4, 2], [7, 2], [4, 2, 2], [4, 1, 2, 1], [1, 6, 1], [4, 1, 2], [1, 1, 4], [4, 2], [2, 3], [1, 4], [3, 1], [2]]
-	},
-	{
-		title: "A dog climbs on the table",
-		width: 15,
-		height: 10,
-		url: "https://www.nonograms.org/nonograms/i/39127",
-		cols: [[1], [1], [2, 2], [1, 1], [1, 1], [1, 1], [1, 1, 1], [2, 3, 2], [6], [2, 1], [1], [2, 3], [1, 2, 1], [2, 1], [6]],
-		rows: [[1], [2, 1], [4, 2], [4], [2, 2, 1], [10, 1, 1], [1, 1, 1], [4, 4], [1, 1, 1, 1], [1, 1, 1, 1]]
 	},
 	{
 		title: "A dog with a bone",
@@ -797,24 +813,11 @@ const nonograms = [
 		cols: [[3, 4], [4, 2, 1, 3], [3, 2, 2, 1], [2, 2], [3, 2, 1], [1, 3, 1, 1], [5, 1, 3], [2, 1, 5], [2, 1, 3], [1, 2, 2], [2, 2, 1], [1, 2, 3, 1], [3, 1, 2], [4, 3], [4]],
 		rows: [[1, 1], [2, 2], [4, 2], [9], [1, 3, 3], [2, 1, 3], [2, 3, 2], [1, 5], [1, 2, 2], [1, 2, 2, 2], [1, 3, 3, 2, 1], [2, 2, 5, 1], [3, 3, 3], [1, 3, 2], [1, 1, 1, 1]]
 	},
-	{
-		title: "A jumping cat",
-		width: 15,
-		height: 10,
-		url: "https://www.nonograms.org/nonograms/i/36472",
-		cols: [[2, 1], [2, 3], [1, 1], [6], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [2, 1], [1, 2], [2, 3], [3, 1], [1, 1, 1], [2, 2]],
-		rows: [[1, 1], [2, 3], [3, 2, 1, 1], [7, 3], [1, 2], [1, 6], [3, 4], [3, 1], [1], [2]]
-	},
-	{
-		title: "A parrot",
-		width: 10,
-		height: 10,
-		url: "https://www.nonograms.org/nonograms/i/36478",
-		cols: [[3], [3], [2, 1], [1, 1, 3], [1], [2], [7], [2, 1, 2], [2, 2, 1], [2]],
-		rows: [[1], [2], [3, 1], [5, 2], [2, 3], [2, 1, 1], [3, 1], [1, 1, 1], [1, 2], [1, 2]]
-	}
-].map(e => new Nonogram(e.title, e.width, e.height, e.url, e.cols, e.rows));
-nonograms.forEach(e => e.solve());
+];
+
+const nonograms = nonogramsInfo.map(e => new Nonogram(e.title, e.width, e.height, e.url, e.cols, e.rows)).sort((a, b) => stringCompare(a.title, b.title)).filter(e => e.solve());
+// nonograms.forEach(e => e.solve());
+// nonograms.filter(e => e.isSolved).forEach(e => e.print());
 // nonograms.forEach(e => e.print());
 
 /*
@@ -846,13 +849,15 @@ class Taiji {
 		flowerPurple: "#cb27ff",
 		cellDark: "#271f23",
 		cellLight: "#8f8e93",
-		cellMark: "#48996c",
+		cellMark: "#ffffff",
+		// cellMark: "#48996c",
 		cellDoneDark: "#2d272b",
 		cellDoneLight: "#e4e4ed",
 	}
 	private answer: boolean[][] = [];
 	private input: { checked: boolean, marked: boolean }[][] = [];
 	private rules: Maybe<number>[][] = [];
+	private isComplete: boolean = false;
 
 	private state: PLACING = PLACING.NONE;
 
@@ -945,10 +950,10 @@ class Taiji {
 				this.state = this.input[i][j].marked ? PLACING.MARK_OFF : PLACING.MARK_ON;
 			} else if (e.button == 2) {
 				// window?.event?.returnValue = !1;
-				// 	window?.event?.cancelBubble = !0;
-				e?.stopPropagation();
-				e?.preventDefault();
-				this.state = PLACING.MARK_OFF;
+				// window?.event?.cancelBubble = !0;
+				// e?.stopPropagation();
+				// e?.preventDefault();
+				this.state = this.input[i][j].marked ? PLACING.MARK_OFF : PLACING.MARK_ON;
 			}
 			updateCell(e);
 		});
@@ -963,6 +968,7 @@ class Taiji {
 				//TODO: add compare
 			}
 		});
+		document.addEventListener("contextmenu", (e: MouseEvent) => e.preventDefault());
 		this.generateGame();
 	}
 
@@ -973,6 +979,7 @@ class Taiji {
 		this.ctxBg.scale(this.scale, this.scale);
 		// reset random
 		this.setSeed(this.seed);
+		this.isComplete = false;
 		this.answer = [];
 		this.input = [];
 		this.rules = [];
@@ -996,6 +1003,52 @@ class Taiji {
 		}
 	}
 
+	generateGameFromNonogram(nonogram: Nonogram) {
+		this.isComplete = false;
+		this.width = nonogram.width;
+		this.height = nonogram.height;
+		this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+		this.ctx.scale(this.scale, this.scale);
+		this.ctxBg.setTransform(1, 0, 0, 1, 0, 0);
+		this.ctxBg.scale(this.scale, this.scale);
+		this.answer = nonogram.getField().map(e => e.map(e => e === true ? true : false));;
+		this.input = [];
+		this.rules = [];
+		for (let i = 0; i < this.height; i++) {
+			this.input[i] = [];
+			for (let j = 0; j < this.width; j++) {
+				this.input[i][j] = { checked: false, marked: false };
+				this.drawCell(i, j);
+			}
+		}
+		for (let i = 0; i < this.height; i++) {
+			this.rules[i] = [];
+			for (let j = 0; j < this.width; j++) {
+				this.rules[i][j] = this.getCount(this.answer, i, j, idfn);
+				this.drawFlower(i, j, this.rules[i][j]);
+			}
+		}
+	}
+
+	redraw() {
+		this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+		this.ctx.scale(this.scale, this.scale);
+		this.ctxBg.setTransform(1, 0, 0, 1, 0, 0);
+		this.ctxBg.scale(this.scale, this.scale);
+		this.ctx.clearRect(0, 0, this.width * CELL_SIZE, this.height * CELL_SIZE);
+		this.ctxBg.clearRect(0, 0, this.width * CELL_SIZE, this.height * CELL_SIZE);
+		for (let i = 0; i < this.height; i++) {
+			for (let j = 0; j < this.width; j++) {
+				this.drawCell(i, j);
+			}
+		}
+		for (let i = 0; i < this.height; i++) {
+			for (let j = 0; j < this.width; j++) {
+				this.drawFlower(i, j, this.rules[i][j]);
+			}
+		}
+	}
+
 	check() {
 		for (let i = 0; i < this.height; i++) {
 			for (let j = 0; j < this.width; j++) {
@@ -1004,6 +1057,8 @@ class Taiji {
 				}
 			}
 		}
+		this.isComplete = true;
+		this.redraw();
 		return true;
 	}
 
@@ -1016,7 +1071,7 @@ class Taiji {
 
 	private drawFlower(i: number, j: number, flower?: number) {
 		const [x, y] = this.ij2xy(i, j);
-		if (flower) {
+		if (flower !== undefined && !this.isComplete) {
 			const getColor = (num: number) => flower > num ? this.colorPalette.flowerYellow : this.colorPalette.flowerPurple;
 			const removePixel = (dx: number, dy: number) => this.ctx.clearRect(x + dx, y + dy, 1, 1);
 			this.ctx.fillStyle = getColor(0);
@@ -1046,10 +1101,10 @@ class Taiji {
 
 	private drawCell(i: number, j: number) {
 		const [x, y] = this.ij2xy(i, j);
-		this.fillRect(this.ctxBg, x, y, 0, this.colorPalette.cellDark);
-		this.strokeRect(this.ctxBg, x, y, 1, this.input[i][j].marked ? this.colorPalette.cellMark : this.colorPalette.cellLight);
+		this.fillRect(this.ctxBg, x, y, 0, this.colorPalette[this.isComplete ? "cellDoneDark" : "cellDark"]);
+		this.strokeRect(this.ctxBg, x, y, 1, this.colorPalette[this.isComplete ? "cellDoneLight" : this.input[i][j].marked ? "cellMark" : "cellLight"]);
 		if (this.input[i][j].checked) {
-			this.fillRect(this.ctxBg, x, y, 3, this.colorPalette.cellLight);
+			this.fillRect(this.ctxBg, x, y, 3, this.colorPalette[this.isComplete ? "cellDoneLight" : "cellLight"]);
 		}
 	}
 
@@ -1074,7 +1129,6 @@ class Taiji {
 
 function Page() {
 	const [stepsLeft, setStepsLeft] = useState(2);
-	// const [game, _] = useState(new Taiji(35, 25, 3, () => setStepsLeft(e => e - 1)));
 	const [game, _] = useState(new Taiji(5, 5, 5, () => setStepsLeft(e => e - 1)));
 	const [width, setWidth] = useState(game.width);
 	const [height, setHeight] = useState(game.height);
@@ -1093,14 +1147,7 @@ function Page() {
 	const canvasBaseStyle: React.CSSProperties = { position: "absolute", left: 0, top: 0, padding: "8px" };
 
 	return <div style={{ display: "flex", flexDirection: "row", flex: 1 }}>
-		<Panel
-			// extraClasses="p8"
-			fillAvailable
-			cssStyle={{
-				position: "relative",
-				overflow: "auto",
-			}}
-		>
+		<Panel fillAvailable cssStyle={{ position: "relative", overflow: "auto", }}		>
 			<Canvas
 				width={game.width * CELL_SIZE * game.scale}
 				height={game.height * CELL_SIZE * game.scale}
@@ -1120,53 +1167,77 @@ function Page() {
 				cssStyle={{ ...canvasBaseStyle, zIndex: 0, visibility: "hidden" }}
 			/> */}
 		</Panel>
-		<Panel extraClasses="p8" cssStyle={{ width: "300px" }}>
-			{stepsLeft > 0 ? <h1>Loading...</h1>
-				: <div style={{ display: "grid", gap: "8px", gridTemplateColumns: "repeat(2, auto)", justifyContent: "start", alignItems: "center" }}>
-					<h5 style={{ display: "inline" }}>Width</h5>
-					<Input
-						value={width}
-						onChange={e => setWidth(+e.target.value)}
-						cssStyle={{ width: "140px" }}
-						otherAttributes={{ type: "number", min: "1" }}
-					/>
-					<h5 style={{ display: "inline" }}>Height</h5>
-					<Input
-						value={height}
-						onChange={e => setHeight(+e.target.value)}
-						cssStyle={{ width: "140px" }}
-						otherAttributes={{ type: "number", min: "1" }}
-					/>
-					<h5 style={{ display: "inline" }}>Scale</h5>
-					<Input
-						value={scale}
-						onChange={e => setScale(+e.target.value)}
-						cssStyle={{ width: "140px" }}
-						otherAttributes={{ type: "number", min: "1", max: "5" }}
-					/>
-					<h5 style={{ display: "inline" }}>Seed</h5>
-					<Input
-						value={seed}
-						onChange={e => setSeed(+e.target.value)}
-						cssStyle={{ width: "140px" }}
-						otherAttributes={{ type: "number", min: "0" }}
-					/>
-					<Button text="New game" color="green" onClick={() => {
-						game.setSeed();
-						setSeed(game.seed);
-						game.generateGame()
-					}} />
-					<Button text="Apply changes" onClick={() => {
-						game.width = width;
-						game.height = height;
-						game.scale = scale;
-						callRedraw(e => !e);
-						game.setSeed(seed);
-						setTimeout(() => game.generateGame(), 1);
-					}} />
-					<Button text="Check (space)" onClick={game.check} />
-				</div>}
-		</Panel>
+		<div style={{ display: "flex", flexDirection: "column", height: "100%", }}>
+			<Panel extraClasses="p8" cssStyle={{ width: "300px", flex: "0 0 auto", }}>
+				{stepsLeft > 0 ? <h1>Loading...</h1>
+					: <div style={{ display: "grid", gap: "8px", gridTemplateColumns: "repeat(2, auto)", justifyContent: "start", alignItems: "center" }}>
+						<h3 className="pb8" style={{ gridColumn: "1 / span 2" }}>Settings</h3>
+						<h5 style={{ display: "inline" }}>Width</h5>
+						<Input
+							value={width}
+							onChange={e => setWidth(+e.target.value)}
+							cssStyle={{ width: "140px" }}
+							otherAttributes={{ type: "number", min: "1" }}
+						/>
+						<h5 style={{ display: "inline" }}>Height</h5>
+						<Input
+							value={height}
+							onChange={e => setHeight(+e.target.value)}
+							cssStyle={{ width: "140px" }}
+							otherAttributes={{ type: "number", min: "1" }}
+						/>
+						<h5 style={{ display: "inline" }}>Scale</h5>
+						<Input
+							value={scale}
+							onChange={e => {
+								game.scale = +e.target.value;
+								setScale(+e.target.value);
+								callRedraw(e => !e);
+								setTimeout(() => game.redraw(), 1);
+							}}
+							cssStyle={{ width: "140px" }}
+							otherAttributes={{ type: "number", min: "1", max: "5" }}
+						/>
+						<h5 style={{ display: "inline" }}>Seed</h5>
+						<Input
+							value={seed}
+							onChange={e => setSeed(+e.target.value)}
+							cssStyle={{ width: "140px" }}
+							otherAttributes={{ type: "number", min: "0" }}
+						/>
+						<Button text="New game" color="green" onClick={() => {
+							game.setSeed();
+							setSeed(game.seed);
+							game.generateGame();
+						}} />
+						<Button text="Apply changes" onClick={() => {
+							game.width = width;
+							game.height = height;
+							game.scale = scale;
+							callRedraw(e => !e);
+							game.setSeed(seed);
+							setTimeout(() => game.generateGame(), 1);
+						}} />
+						<Button text="Check (space)" onClick={game.check} />
+					</div>}
+			</Panel>
+			<Panel extraClasses="p8" cssStyle={{ width: "300px", flex: "1 1 auto", display: "flex", flexFlow: "column", overflow: "auto" }}>
+				<h3 className="pb8">Pictures</h3>
+				<div>
+					{nonograms.map((e, i) => <Button
+						key={i}
+						text={`${e.title} (${e.width}x${e.height})`}
+						onClick={() => {
+							setWidth(e.width);
+							setHeight(e.height);
+							game.generateGameFromNonogram(e);
+							callRedraw(e => !e);
+							setTimeout(() => game.redraw(), 1);
+						}}
+					/>)}
+				</div>
+			</Panel>
+		</div>
 	</div>
 }
 

@@ -1,13 +1,14 @@
 export default class Nonogram {
-	private title: string;
-	private width: number;
-	private height: number;
+	readonly title: string;
+	width: number;
+	height: number;
 	private url: string;
 	private cols: number[][];
 	private rows: number[][];
 	private field: Maybe<boolean>[][];
 	private colsDone: boolean[];
 	private rowsDone: boolean[];
+	isSolved: Maybe<boolean>;
 
 	constructor(title: string, width: number, height: number, url: string, cols: number[][], rows: number[][]) {
 		this.title = title;
@@ -31,11 +32,14 @@ export default class Nonogram {
 			counter++;
 			if (!changed) {
 				// debugger;
-				console.log(this.title, this.url);
-				this.print2();
+				// console.log(this.title, this.url);
+				// this.print2();
+				this.isSolved = false;
 				return false;
 			}
 		}
+		this.isSolved = true;
+		return true;
 	}
 
 	private tryAllPositions(counter: number, isBruteforce: boolean = false) {
@@ -43,16 +47,16 @@ export default class Nonogram {
 		let changedRow = false;
 		for (let i = 0; i < this.height; i++) {
 			if (!this.rowsDone[i]) {
-				// if (counter == 6 && i == 9) debugger;
-				if (this.tryPositionsForRow(i, isBruteforce || counter == 6 && i == 9)) {
+				// if ((counter == 2 || counter == 3) && (i == 10)) debugger;
+				if (this.tryPositionsForRow(i, isBruteforce || counter == 0 && i == 0)) {
 					changedRow = true;
 					this.rowsDone[i] = this.field[i].every(e => e !== undefined);
 				}
-				if (this.rowsDone[i] !== this.field[i].every(e => e !== undefined)) console.log("\nRow " + counter);
+				if (this.rowsDone[i] !== this.field[i].every(e => e !== undefined)) console.log("\nWrong Row " + counter);
 			}
 		}
-		console.log("\nRow " + counter);
-		this.print2()
+		// console.log("\nRow " + counter);
+		// this.print2()
 		if (changedRow) {
 			for (let j = 0; j < this.width; j++) {
 				if (!this.colsDone[j]) this.colsDone[j] = this.field.every(e => e[j] !== undefined);
@@ -66,7 +70,7 @@ export default class Nonogram {
 					changedCol = true;
 					this.colsDone[j] = this.field.every(e => e[j] !== undefined);
 				}
-				if (this.colsDone[j] !== this.field.every(e => e[j] !== undefined)) console.log("\nCol " + counter);
+				if (this.colsDone[j] !== this.field.every(e => e[j] !== undefined)) console.log("\nWrong Col " + counter);
 			}
 		}
 		returnVal ||= changedCol;
@@ -75,8 +79,8 @@ export default class Nonogram {
 				if (!this.rowsDone[i]) this.rowsDone[i] = this.field[i].every(e => e !== undefined);
 			}
 		}
-		console.log("\nCol " + counter);
-		this.print2()
+		// console.log("\nCol " + counter);
+		// this.print2()
 		return changedRow || changedCol;
 	}
 
@@ -88,21 +92,6 @@ export default class Nonogram {
 			return true;
 		} else {
 			// if (i == 9) debugger;
-			if (isBruteforce) {
-				debugger;
-				let oldField2 = [undefined, undefined, undefined, undefined, undefined, false, undefined, undefined, true, undefined, undefined, false, false, false, false, false, false, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined];
-				// let oldField2 = [undefined, undefined, undefined, undefined, undefined, false, undefined, undefined, true, undefined, undefined, false, false, true, true, true, true, false, true, false, undefined, undefined, undefined, undefined, undefined];
-				let hints2 = [5, 4]
-				let newField2 = this.tryPositions([...oldField2], hints2);
-				oldField2 = [undefined, undefined, undefined, undefined, undefined, false, true, undefined, undefined, undefined, undefined, false, false, false, false, false, false, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined];
-				// let oldField2 = [undefined, undefined, undefined, undefined, undefined, false, undefined, undefined, true, undefined, undefined, false, false, true, true, true, true, false, true, false, undefined, undefined, undefined, undefined, undefined];
-				hints2 = [5, 4]
-				newField2 = this.tryPositions([...oldField2], hints2);
-				oldField2 = [undefined, undefined, undefined, undefined, undefined, false, undefined, undefined, undefined, undefined, true, false, false, false, false, false, false, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined];
-				// let oldField2 = [undefined, undefined, undefined, undefined, undefined, false, undefined, undefined, true, undefined, undefined, false, false, true, true, true, true, false, true, false, undefined, undefined, undefined, undefined, undefined];
-				hints2 = [5, 4]
-				newField2 = this.tryPositions([...oldField2], hints2);
-			}
 			const newField = this.tryPositions([...this.field[i]], hints);
 			// const newField = (isBruteforce ? this.tryPositionsBrutforce : this.tryPositions)([...this.field[i]], hints);
 			let changed = newField.join(",") != this.field[i].join(",");
@@ -149,28 +138,58 @@ export default class Nonogram {
 				}
 			}
 		}
+		if (fieldLeft.length !== fieldRight.length || fieldLeft.length !== hints.length) {
+			alert("Something went wrong");
+			console.log(this.title);
+			console.log(this.url);
+			debugger;
+		}
 		// advanced intersections
-		let fromEmpty = 0;
+		let fromEmpty = -1;
 		let fromFilled = -1;
 		let toFilled = -1;
 		let toEmpty = -1;
 		let results: { fromEmpty: number, fromFilled: number, toFilled: number, toEmpty: number }[] = [];
-		for (let i = 0; i < field.length; i++) {
+		for (let i = 0; i <= field.length; i++) {
 			if (field[i] === true) {
 				if (fromFilled == -1) {
 					fromFilled = i;
 				}
 				toFilled = i;
-			} else if (field[i] === false) {
+			} else if (field[i] === false || i == field.length) {
 				toEmpty = i;
 				if (fromFilled > -1) {
-					results.push({ fromEmpty, fromFilled, toFilled, toEmpty });
+					// ignore if filled part can't be expanded
+					if (fromEmpty + 1 < fromFilled || toFilled + 1 < toEmpty) results.push({ fromEmpty, fromFilled, toFilled, toEmpty });
 				}
 				fromEmpty = i;
 				fromFilled = -1;
 				toFilled = -1;
 			}
 		}
+		results.forEach(({ fromEmpty, fromFilled, toFilled, toEmpty }) => {
+			const minSize = toFilled - fromFilled + 1;
+			const maxSize = toEmpty - fromEmpty - 1;
+			let maxFrom = undefined;//fromEmpty + 1;
+			let minTo = undefined;//toEmpty - 1;
+			for (let i = 0; i < hints.length; i++) {
+				if (
+					hints[i] >= minSize && hints[i] <= maxSize
+					&& fieldLeft[i] <= fromFilled && fieldRight[i] + hints[i] - 1 >= toFilled
+				) {
+					const maxFromCurrent = toEmpty - hints[i];
+					if (maxFrom === undefined || maxFrom < maxFromCurrent) maxFrom = maxFromCurrent;
+					const minToCurrent = fromEmpty + hints[i];
+					if (minTo === undefined || minTo > minToCurrent) minTo = minToCurrent;
+				}
+			}
+			for (let i = maxFrom ?? Infinity; i < fromFilled; i++) {
+				field[i] = true;
+			}
+			for (let i = toFilled + 1; i <= (minTo ?? -1); i++) {
+				field[i] = true;
+			}
+		});
 		// check empty
 		var fieldEmpty = new Set(new Array(field.length).fill(0).map((_e, i) => i).filter(i => field[i] === undefined));
 		for (let i = 0; i < fieldLeft[0]; i++) {
@@ -393,6 +412,7 @@ export default class Nonogram {
 	}
 	public print() {
 		console.log(this.title);
+		console.log(this.url);
 		console.log(this.field.map(e => e.map(e => e ? "#" : ".").join("")).join("\n"));
 	}
 	public print2() {
@@ -405,6 +425,9 @@ export default class Nonogram {
 				return res;
 			}, []).join("\n");
 		console.log(output);
+	}
+	public getField() {
+		return this.field;
 	}
 }
 
