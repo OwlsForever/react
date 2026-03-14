@@ -38,7 +38,6 @@ if (enableNonogramSaving) {
 	});
 	app.options("/saveNonogram", cors(corsOptions));
 }
-app.use("/api", getApiRoutes(db));
 //#endregion
 
 const configs = new Map(fs.readFileSync(path.resolve(__dirname, "server.config"), "utf8").split("\n").map(e => e.split("=") as [string, string]));
