@@ -9,7 +9,7 @@ type InputOrTextarea = "input" | "textarea";
 type Props<T extends InputOrTextarea> = {
 	id?: string,
 	placeholder?: string;
-	value: string;
+	value: string | number;
 	onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 	syntheticEvents?: DOMAttributes<HTMLInputElement | HTMLTextAreaElement>;
 	otherAttributes?: ComponentProps<T>;

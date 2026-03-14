@@ -23,7 +23,6 @@ export default class Nonogram {
 	}
 
 	public solve() {
-		// debugger;
 		var counter = 0;
 		while (!this.colsDone.every(e => e) && !this.rowsDone.every(e => e)) {
 			let changed = false;
@@ -31,9 +30,6 @@ export default class Nonogram {
 			if (!changed) changed ||= this.tryAllPositions(counter, true);
 			counter++;
 			if (!changed) {
-				// debugger;
-				// console.log(this.title, this.url);
-				// this.print2();
 				this.isSolved = false;
 				return false;
 			}
@@ -47,7 +43,6 @@ export default class Nonogram {
 		let changedRow = false;
 		for (let i = 0; i < this.height; i++) {
 			if (!this.rowsDone[i]) {
-				// if ((counter == 2 || counter == 3) && (i == 10)) debugger;
 				if (this.tryPositionsForRow(i, isBruteforce || counter == 0 && i == 0)) {
 					changedRow = true;
 					this.rowsDone[i] = this.field[i].every(e => e !== undefined);
@@ -55,8 +50,6 @@ export default class Nonogram {
 				if (this.rowsDone[i] !== this.field[i].every(e => e !== undefined)) console.log("\nWrong Row " + counter);
 			}
 		}
-		// console.log("\nRow " + counter);
-		// this.print2()
 		if (changedRow) {
 			for (let j = 0; j < this.width; j++) {
 				if (!this.colsDone[j]) this.colsDone[j] = this.field.every(e => e[j] !== undefined);
@@ -65,7 +58,6 @@ export default class Nonogram {
 		let changedCol = false;
 		for (let j = 0; j < this.width; j++) {
 			if (!this.colsDone[j]) {
-				// if (counter == 12 && j == 7) debugger;
 				if (this.tryPositionsForCol(j, isBruteforce)) {
 					changedCol = true;
 					this.colsDone[j] = this.field.every(e => e[j] !== undefined);
@@ -79,8 +71,6 @@ export default class Nonogram {
 				if (!this.rowsDone[i]) this.rowsDone[i] = this.field[i].every(e => e !== undefined);
 			}
 		}
-		// console.log("\nCol " + counter);
-		// this.print2()
 		return changedRow || changedCol;
 	}
 
@@ -170,8 +160,8 @@ export default class Nonogram {
 		results.forEach(({ fromEmpty, fromFilled, toFilled, toEmpty }) => {
 			const minSize = toFilled - fromFilled + 1;
 			const maxSize = toEmpty - fromEmpty - 1;
-			let maxFrom = undefined;//fromEmpty + 1;
-			let minTo = undefined;//toEmpty - 1;
+			let maxFrom = undefined;
+			let minTo = undefined;
 			for (let i = 0; i < hints.length; i++) {
 				if (
 					hints[i] >= minSize && hints[i] <= maxSize
@@ -212,18 +202,13 @@ export default class Nonogram {
 			for (let i = Math.max(left, emptyMin); i < left + hint; i++) {
 				fieldEmpty.delete(i);
 			}
-			// for (let i = Math.max(right, emptyMin); i < right + hint; i++) {
-			// 	fieldEmpty.delete(i);
-			// }
 			var fitSet: Set<number> = new Set();
 			for (let i = Math.max(left, emptyMin - hint) + 1; i <= right; i++) {
-				// if (fieldEmpty.has(i)) {
 				var isFit = field[i - 1] !== true && field[i + hint] !== true;
 				for (let j = 0; j < hint && isFit; j++) {
 					isFit = field[i + j] !== false;
 				}
 				if (isFit) fitSet.add(i);
-				// }
 			}
 			if (fitSet.size > 0) {
 				const fit = [...fitSet.keys()];
@@ -248,10 +233,6 @@ export default class Nonogram {
 			}
 		}
 		fieldEmpty.forEach(i => field[i] = false);
-		// console.log("----------------");
-		// console.log(fieldLeft);
-		// console.log(fieldRight);
-		// console.log(this.field2s(field));
 		return field;
 	}
 
@@ -287,126 +268,6 @@ export default class Nonogram {
 		return false;
 	}
 
-	// Bruteforce area, only if can't do with normal methods
-	private tryPositionsBrutforce(field: Maybe<boolean>[], hints: number[]) {
-		// var fieldLeft = new Array(field.length).fill(-1);
-		// var fieldRight = new Array(field.length).fill(-1);
-		var fieldLeft: number[] = [];
-		var fieldRight: number[] = [];
-		this.placeFilledRecursionBrutforce(field, hints, fieldLeft);
-		this.placeFilledRecursionBrutforce([...field].reverse(), [...hints].reverse(), fieldRight);
-		fieldRight = fieldRight.reverse().map((e, i) => field.length - e - hints[i]);
-		for (let i = 0; i < fieldLeft.length; i++) {
-			if (fieldLeft[i] + hints[i] > fieldRight[i]) {
-				for (let j = fieldRight[i]; j < fieldLeft[i] + hints[i]; j++) {
-					field[j] = true;
-				}
-			}
-		}
-		var fieldEmpty = new Set(new Array(field.length).fill(0).map((_e, i) => i).filter(i => field[i] === undefined));
-		for (let i = 0; i < fieldLeft[0]; i++) {
-			if (field[i] === undefined) {
-				field[i] = false;
-				fieldEmpty.delete(i);
-			}
-		}
-		for (let i = fieldRight.at(-1)! + hints.at(-1)!; i < field.length; i++) {
-			if (field[i] === undefined) {
-				field[i] = false;
-				fieldEmpty.delete(i);
-			}
-		}
-		// var iStart = fieldLeft[0];
-		// for (let i = iStart; i < iStart + hints[0] && i != Infinity; i++) {
-		// 	fieldEmpty.delete(i);
-		// }
-		// iStart = fieldRight.at(-1)!;
-		// for (let i = iStart; i < iStart + hints.at(-1)! && i != Infinity; i++) {
-		// 	fieldEmpty.delete(i);
-		// }
-		for (let posI = 0; posI < fieldLeft.length; posI++) {
-			const left = fieldLeft[posI];
-			const right = fieldRight[posI];
-			const hint = hints[posI];
-			const emptyMin = fieldEmpty.keys().next().value ?? Infinity;
-			for (let i = Math.max(left, emptyMin); i < left + hint; i++) {
-				fieldEmpty.delete(i);
-			}
-			// for (let i = Math.max(right, emptyMin); i < right + hint; i++) {
-			// 	fieldEmpty.delete(i);
-			// }
-			var fitSet: Set<number> = new Set();
-			for (let i = Math.max(left, emptyMin - hint) + 1; i <= right; i++) {
-				// if (fieldEmpty.has(i)) {
-				var isFit = field[i - 1] !== true && field[i + hint] !== true;
-				for (let j = 0; j < hint && isFit; j++) {
-					isFit = field[i + j] !== false;
-				}
-				if (isFit) fitSet.add(i);
-				// }
-			}
-			if (fitSet.size > 0) {
-				const fit = [...fitSet.keys()];
-				let from = fit[0];
-				let to = from + hint - 1;
-				let toRemove: { from: number, to: number }[] = [];
-
-				const limit = fit[fit.length - 1]
-				for (let i = from; i <= limit; i++) {
-					if (fitSet.has(i)) {
-						if (to + 1 < i) {
-							toRemove.push({ from, to });
-							from = i;
-						}
-						to = i + hint - 1;
-					}
-				}
-				toRemove.push({ from, to });
-				toRemove.forEach(({ from, to }) => {
-					for (let i = from; i <= to; i++) fieldEmpty.delete(i);
-				});
-			}
-		}
-		fieldEmpty.forEach(i => field[i] = false);
-		// console.log("----------------");
-		// console.log(fieldLeft);
-		// console.log(fieldRight);
-		// console.log(this.field2s(field));
-		return field;
-	}
-
-	private placeFilledRecursionBrutforce(
-		field: Maybe<boolean>[],
-		hints: number[],
-		result: number[] = [],
-		currentPos: number = 0,
-		movementLeft: number = hints.reduce((res, e) => res + e, hints.length - 1)
-	) {
-		if (hints.length == 0) {
-			for (let i = currentPos; i < field.length; i++) {
-				if (field[i] === true) return false;
-			}
-			return true;
-		}
-		const hint = hints[0];
-		const otherHints = hints.slice(1);
-		var limit = field.length - movementLeft;
-		for (let i = currentPos; i <= limit; i++) {
-			if (field[i] === true) limit = i;
-			var isFit = field[i + hint] !== true;
-			for (let j = 0; j < hint && isFit; j++) {
-				isFit = field[i + j] !== false;
-			}
-			if (isFit) {
-				result.push(i);
-				let res = this.placeFilledRecursionBrutforce(field, otherHints, result, i + hint + 1, movementLeft - hint - 1);
-				if (res) return true;
-				result.pop();
-			}
-		}
-		return false;
-	}
-
 	private field2s(field: Maybe<boolean>[], test: boolean = false) {
 		return field.map((e, i) => (e === undefined ? "." : e ? "#" : "x") + (test && i % 5 == 4 && i < field.length - 1 ? "|" : "")).join("")
 	}
@@ -429,135 +290,29 @@ export default class Nonogram {
 	public getField() {
 		return this.field;
 	}
+
+	public getProcessed() {
+		return {
+			id: +this.url.split("/").at(-1)!,
+			title: this.title,
+			width: this.width,
+			height: this.height,
+			url: this.url,
+			cols: this.cols,
+			rows: this.rows,
+			field: this.field.map(row => {
+				var current = 0;
+				var res = [];
+				for (let i = 0; i < this.width; i++) {
+					if (row[i]) current |= 1;
+					if (i % 32 == 31) {
+						res.push(current);
+						current = 0;
+					} else current <<= 1;
+				}
+				res.push(current);
+				return res;
+			})
+		}
+	}
 }
-
-/*
-xxxxx|xxxx#|#x###
-...x.|....x|###x#
-...x.|.....|x####
-...x.|.....|.x##x
-.#.xx|....x|###x#
------------------
-xx.##|.x###|###x#
-.#.x#|####x|#x##x
-..###|##..x|#xx#x
-...#x|#x...|#..xx
-###x.|#....|....x
------------------
-...x.|.....|..#.x
-...x.|.....|..#.x
-...x.|.....|..#.x
-...x.|x....|....x
-...x.|x....|....x
-
-xxxxx|xxxx#|#x###
-...x.|....x|###x#
-...x.|....#|x####
-...x.|....#|.x##x
-.#.xx|...xx|###x#
------------------
-xx.##|.x###|###x#
-.#.x#|####x|#x##x
-..###|###xx|#xx#x
-.x.#x|#x...|#..xx
-###x.|#....|....x
------------------
-.x.x.|#....|..#.x
-...x.|.....|..#.x
-...x.|.....|..#.x
-...x.|x....|....x
-..xx.|x....|....x
-
-xxxxx|xxxx#|#x###
-...x.|....x|###x#
-...x.|..x##|x####
-...x.|....#|.x##x
-.#.xx|.#.xx|###x#
------------------
-xx.##|.x###|###x#
-.#.x#|####x|#x##x
-x####|###xx|#xx#x
-xx##x|#x...|##.xx
-###x.|#....|....x
------------------
-.x.x.|#....|..#.x
-...x.|.....|..#.x
-...x.|.....|..#.x
-...x.|x....|....x
-..xx.|x....|....x
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

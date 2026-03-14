@@ -10,12 +10,12 @@ init(app);
 
 //#region Routes
 app.get("/", async (_req, res) => res.sendFile(path.resolve(__dirname, "..", "static", "views", "pages", "index.html")));
-const pages = ["repo", "dreamRaiders", "ranobe", "simulations"];
+const pages = ["repo", "dreamRaiders", "ranobe", "simulations", "taiji"];
 pages.forEach(pageName => app.get("/" + pageName, async (_req, res) => res.sendFile(path.resolve(__dirname, "..", "static", "views", "pages", pageName + ".html"))));
 //#endregion
 
 //#region API
-const enableNonogramSaving = true;
+const enableNonogramSaving = false;
 if (enableNonogramSaving) {
 	type Nonogram = { title: string, width: number, height: number, url: string, cols: number[][], rows: number[][] };
 	var nonograms: Nonogram[] = JSON.parse(fs.readFileSync(path.resolve(__dirname, "nonograms.json"), "utf8"));
@@ -32,7 +32,7 @@ if (enableNonogramSaving) {
 		const info = req.body as Nonogram;
 		const exists = nonograms.some(e => e.url == info.url);
 		if (!exists) nonograms.push(info);
-		fs.writeFileSync(path.resolve(__dirname, "nonograms.json"), JSON.stringify(nonograms));
+		fs.writeFileSync(path.resolve(__dirname, "nonograms.json"), JSON.stringify(nonograms.sort((a, b) => a.title < b.title ? -1 : a.title > b.title ? 1 : 0)));
 		console.log(`Nonogram "${info.title}" ${exists ? "exists" : "saved"}`);
 		res.json({});
 	});
