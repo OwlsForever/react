@@ -81,9 +81,7 @@ export default class Nonogram {
 				this.field[i][j] = false;
 			return true;
 		} else {
-			// if (i == 9) debugger;
 			const newField = this.tryPositions([...this.field[i]], hints);
-			// const newField = (isBruteforce ? this.tryPositionsBrutforce : this.tryPositions)([...this.field[i]], hints);
 			let changed = newField.join(",") != this.field[i].join(",");
 			if (changed) this.field[i] = newField;
 			return changed;
@@ -103,7 +101,6 @@ export default class Nonogram {
 				oldField[i] = this.field[i][j];
 			}
 			const newField = this.tryPositions([...oldField], hints);
-			// const newField = (isBruteforce ? this.tryPositionsBrutforce : this.tryPositions)([...oldField], hints);
 			let changed = newField.join(",") != oldField.join(",");
 			if (changed) {
 				for (let i = 0; i < this.height; i++) {

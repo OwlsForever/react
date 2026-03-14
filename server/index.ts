@@ -26,9 +26,6 @@ if (enableNonogramSaving) {
 		allowedHeaders: ["Content-Type", "Authorization"]
 	};
 	app.post("/saveNonogram", cors(corsOptions), async (req, res) => {
-		// console.info("OWL");
-		// console.info("req.body");
-		// console.info(typeof req.body);
 		const info = req.body as Nonogram;
 		const exists = nonograms.some(e => e.url == info.url);
 		if (!exists) nonograms.push(info);
